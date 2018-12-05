@@ -2,7 +2,7 @@
   "name": "fullstack-pedidos-front",
   "version": "0.0.0",
   "scripts": {
-    "start": "ng serve",
+    "start": "ng build --aot true -c production && node ./bin/www",
     "build": "ng build --aot true -c production && node ./bin/www",
     "server": "node ./bin/www",
     "ng": "ng",
