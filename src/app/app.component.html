@@ -1,20 +1,245 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<nav class="navbar navbar-light navbar-dark bg-dark fixed-top">
+  <span class="navbar-brand mb-0 h1">{{title}}</span>
+</nav>
 
+<div class="container">
+
+  <div class="card">
+    <div class="card-body">
+
+      <h5 class="card-title">Cadastrar Pedido</h5>
+      <h6 class="card-subtitle text-muted">Faça o cadastro de um novo pedido</h6>
+      <br>
+
+      <form [formGroup]="cadastroPedidoForm" (ngSubmit)="create(cadastroPedidoForm.getRawValue())">
+        <div class="form-group">
+          <label for="selectCliente">Cliente</label>
+          <select class="form-control" id="selectCliente" formControlName="cliente">
+            <option disabled selected>Selecione um cliente</option>
+            <option *ngFor="let c of clientes" value="{{c._id}}">{{c.nome}}</option>
+          </select>
+        </div>
+
+        <br>
+
+        <div formArrayName="itens">
+          <div *ngFor="let itens of cadastroPedidoForm.controls['itens'].controls; let i=index">
+            <div [formGroupName]="i" class="row" style="margin-bottom: 20px">
+              <!-- Produto -->
+              <div class="col-sm-12 col-md-4">
+                <input type="hidden" formControlName="multiplo">
+                <label for="selectCliente"><b>#{{i + 1}} Produto</b><small style="padding-left: 15px" *ngIf="cadastroPedidoForm.controls['itens'].controls.length > 1" (click)="removerItem(i, cadastroPedidoForm)">Remover</small></label>
+                <select class="form-control" id="selectProduto" formControlName="produto" (change)="selecionarProduto(i, $event.target.value, cadastroPedidoForm)">
+                  <option disabled selected>Selecione um produto</option>
+                  <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} | R${{p.preco}}</option>
+                </select>
+              </div>
+
+              <!-- Quantidade -->
+              <div class="col-sm-12 col-md-2">
+                <label for="selectCliente">Quantidade</label>
+                <input type="number" class="form-control" id="qtd" formControlName="quantidade">
+              </div>
+
+              <!-- Preço uni. -->
+              <div class="col-sm-12 col-md-4">
+                <label>Preço unitário</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">R$</span>
+                  </div>
+                  <input type="number" class="form-control" id="precoUni" formControlName="precoUni" (input)="calcRentabilidade(i, $event.target.value, cadastroPedidoForm)" placeholder="00,00">
+                </div>
+              </div>
+
+              <!-- Rentabilidade -->
+              <div class="col-sm-12 col-md-2">
+                <label>Rentabilidade</label>
+                <br>
+                <input type="text" class="form-control" formControlName="rentabilidade">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="row">
+          <div class="col">
+            <div class="float-right">
+              <div class="float-right">
+                <button type="button" class="btn btn-outline-info" (click)="adicionarItem(cadastroPedidoForm)">Adicionar Item</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <button type="submit" class="btn btn-primary" [disabled]="!cadastroPedidoForm.valid">Cadastrar Pedido</button>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <br><br>
+
+  <div class="card">
+    <div class="card-body">
+
+      <h5 class="card-title">Lista de Pedidos</h5>
+      <h6 class="card-subtitle text-muted" *ngIf="pedidos.length > 0">Pedidos já cadastrados</h6>
+      <h6 class="card-subtitle text-muted" *ngIf="pedidos.length === 0">Nenhum pedido cadastrado no momento!</h6>
+      <br>
+
+      <div class="card" *ngFor="let p of pedidos">
+        <div class="card-body">
+          <h6 class="card-subtitle text-muted">
+            Cliente
+
+            <div class="float-right" style="padding-top: 5px">
+              <button type="button" class="btn btn-primary" style="margin-left: 5px" data-toggle="modal" [attr.data-target]="'#modalPedido' + p._id">Ver Pedido</button>
+              <button type="button" class="btn btn-success" style="margin-left: 5px" (click)="abrirModalEditar(p)">Editar</button>
+              <button type="button" class="btn btn-danger" style="margin-left: 5px" (click)="deletePedido(p._id)">Excluir</button>
+            </div>
+          </h6>
+          <h6 class="card-title" style="margin-bottom: 0">{{getClienteNome(p.cliente)}}</h6>
+
+          <!-- Modal: Lista de itens do pedido -->
+          <div class="modal fade" id="{{'modalPedido' + p._id}}" role="dialog" [attr.aria-labelledby]="'#modalPedido' + p._id" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Itens do pedido de {{getClienteNome(p.cliente)}}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <table class="table">
+                    <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Produto</th>
+                      <th scope="col">Qtd.</th>
+                      <th scope="col">Preço Uni.</th>
+                      <th scope="col">Rentabilidade</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let i of p.itens; let cont=index">
+                      <th scope="row">{{cont + 1}}</th>
+                      <td>{{getProdutoNome(i.produto)}}</td>
+                      <td>{{i.quantidade}}</td>
+                      <td>{{i.precoUni}}</td>
+                      <td>{{i.rentabilidade}}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                  <button type="button" class="btn btn-success" (click)="abrirModalEditar(p)" data-toggle="modal" [attr.data-target]="'#modalPedido' + p._id">Editar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal: Editar item no pedido -->
+  <div #modalEditarItem class="modal fade" id="modalEditarItem" tabindex="-1" role="dialog" aria-labelledby="modalEditarItem" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Editar pedido</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form [formGroup]="editarPedidoForm" (ngSubmit)="update(editarPedidoForm.getRawValue())">
+          <div class="modal-body">
+            <div class="form-group">
+              <input type="hidden" formControlName="pedido">
+              <label for="selectCliente">Cliente</label>
+              <select class="form-control" formControlName="cliente">
+                <option disabled selected>Selecione um cliente</option>
+                <option *ngFor="let c of clientes" value="{{c._id}}">{{c.nome}}</option>
+              </select>
+            </div>
+
+            <br>
+
+            <div formArrayName="itens">
+              <div *ngFor="let itens of editarPedidoForm.controls['itens'].controls; let i=index">
+                <div [formGroupName]="i" class="row" style="margin-bottom: 20px">
+                  <!-- Produto -->
+                  <div class="col-sm-12 col-md-4">
+                    <input type="hidden" formControlName="multiplo">
+                    <label for="selectCliente"><b>#{{i + 1}} Produto</b><small style="padding-left: 15px" *ngIf="editarPedidoForm.controls['itens'].controls.length > 1" (click)="removerItem(i, editarPedidoForm)">Remover</small></label>
+                    <select class="form-control" id="selectPeodutoEdit" formControlName="produto" (change)="selecionarProduto(i, $event.target.value, editarPedidoForm)">
+                      <option disabled selected>Selecione um produto</option>
+                      <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} | R${{p.preco}}</option>
+                    </select>
+                  </div>
+
+                  <!-- Quantidade -->
+                  <div class="col-sm-12 col-md-2">
+                    <label for="selectCliente">Quantidade</label>
+                    <input type="number" class="form-control" id="quantidadeEdit" formControlName="quantidade">
+                  </div>
+
+                  <!-- Preco uni. -->
+                  <div class="col-sm-12 col-md-4">
+                    <label>Preço unitário</label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">R$</span>
+                      </div>
+                      <input type="number" class="form-control" id="precoUniEdit" formControlName="precoUni" (input)="calcRentabilidade(i, $event.target.value, editarPedidoForm)" placeholder="00,00">
+                    </div>
+                  </div>
+
+                  <!-- Rentabilidade -->
+                  <div class="col-sm-12 col-md-2">
+                    <label>Rentabilidade</label>
+                    <br>
+                    <input type="text" class="form-control" id="rentabilidadeEdit" formControlName="rentabilidade">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+              <div class="col">
+                <div class="float-right">
+                  <div class="float-right">
+                    <button type="button" class="btn btn-outline-info" (click)="adicionarItem(editarPedidoForm)">Adicionar Item</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="!editarPedidoForm.valid">Salvar</button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</div>
