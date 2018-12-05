@@ -23,12 +23,12 @@
         <br>
 
         <div formArrayName="itens">
-          <div *ngFor="let itens of cadastroPedidoForm.controls['itens'].controls; let i=index">
+          <div *ngFor="let itens of cadastroPedidoForm['controls'].itens['controls']; let i=index">
             <div [formGroupName]="i" class="row" style="margin-bottom: 20px">
               <!-- Produto -->
               <div class="col-sm-12 col-md-4">
                 <input type="hidden" formControlName="multiplo">
-                <label for="selectCliente"><b>#{{i + 1}} Produto</b><small style="padding-left: 15px" *ngIf="cadastroPedidoForm.controls['itens'].controls.length > 1" (click)="removerItem(i, cadastroPedidoForm)">Remover</small></label>
+                <label for="selectCliente"><b>#{{i + 1}} Produto</b><small style="padding-left: 15px" *ngIf="cadastroPedidoForm['controls'].itens['controls'].length > 1" (click)="removerItem(i, cadastroPedidoForm)">Remover</small></label>
                 <select class="form-control" id="selectProduto" formControlName="produto" (change)="selecionarProduto(i, $event.target.value, cadastroPedidoForm)">
                   <option disabled selected>Selecione um produto</option>
                   <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} | R${{p.preco}}</option>
@@ -179,12 +179,12 @@
             <br>
 
             <div formArrayName="itens">
-              <div *ngFor="let itens of editarPedidoForm.controls['itens'].controls; let i=index">
+              <div *ngFor="let itens of editarPedidoForm['controls'].itens['controls']; let i=index">
                 <div [formGroupName]="i" class="row" style="margin-bottom: 20px">
                   <!-- Produto -->
                   <div class="col-sm-12 col-md-4">
                     <input type="hidden" formControlName="multiplo">
-                    <label for="selectCliente"><b>#{{i + 1}} Produto</b><small style="padding-left: 15px" *ngIf="editarPedidoForm.controls['itens'].controls.length > 1" (click)="removerItem(i, editarPedidoForm)">Remover</small></label>
+                    <label for="selectCliente"><b>#{{i + 1}} Produto</b><small style="padding-left: 15px" *ngIf="editarPedidoForm['controls'].itens['controls'].length > 1" (click)="removerItem(i, editarPedidoForm)">Remover</small></label>
                     <select class="form-control" id="selectPeodutoEdit" formControlName="produto" (change)="selecionarProduto(i, $event.target.value, editarPedidoForm)">
                       <option disabled selected>Selecione um produto</option>
                       <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} | R${{p.preco}}</option>
