@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "fullstack-pedidos-front": {
+    "fullstack-pedidos": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/fullstack-pedidos-front",
+            "outputPath": "dist/fullstack-pedidos",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -50,18 +50,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "fullstack-pedidos-front:build"
+            "browserTarget": "fullstack-pedidos:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "fullstack-pedidos-front:build:production"
+              "browserTarget": "fullstack-pedidos:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "fullstack-pedidos-front:build"
+            "browserTarget": "fullstack-pedidos:build"
           }
         },
         "test": {
@@ -95,7 +95,7 @@
         }
       }
     },
-    "fullstack-pedidos-front-e2e": {
+    "fullstack-pedidos-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -103,11 +103,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "fullstack-pedidos-front:serve"
+            "devServerTarget": "fullstack-pedidos:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "fullstack-pedidos-front:serve:production"
+              "devServerTarget": "fullstack-pedidos:serve:production"
             }
           }
         },
@@ -123,5 +123,5 @@
       }
     }
   },
-  "defaultProject": "fullstack-pedidos-front"
+  "defaultProject": "fullstack-pedidos"
 }

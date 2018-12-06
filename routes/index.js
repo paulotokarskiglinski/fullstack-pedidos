@@ -4,7 +4,7 @@ var router = express.Router();
 
 // Index
 router.get('/', function(req, res, next) {
-	res.sendFile(path.join(__dirname + '/dist/fullstack-pedidos-front/index.html'));
+	res.sendFile(path.join(__dirname + '/dist/fullstack-pedidos/index.html'));
 });
 
 module.exports = router;

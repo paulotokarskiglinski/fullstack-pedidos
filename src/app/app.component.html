@@ -1,5 +1,5 @@
 <nav class="navbar navbar-light navbar-dark bg-dark fixed-top">
-  <span class="navbar-brand mb-0 h1">{{title}}</span>
+  <h1 class="navbar-brand mb-0 h1">{{title}}</h1>
 </nav>
 
 <div class="container">
@@ -9,9 +9,24 @@
 
       <h5 class="card-title">Cadastrar Pedido</h5>
       <h6 class="card-subtitle text-muted">Faça o cadastro de um novo pedido</h6>
+
       <br>
 
-      <form [formGroup]="cadastroPedidoForm" (ngSubmit)="create(cadastroPedidoForm.getRawValue())">
+      <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="alerts.cadastro.sucesso">
+        Cadastro realizado com sucesso!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="alerts.cadastro.erro">
+        Erro ao cadastrar o pedido! Tente novamente mais tarde.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="cadastroPedidoForm" [formGroup]="cadastroPedidoForm" (ngSubmit)="create(cadastroPedidoForm.getRawValue())">
         <div class="form-group">
           <label for="selectCliente">Cliente</label>
           <select class="form-control" id="selectCliente" formControlName="cliente">
@@ -29,7 +44,10 @@
               <!-- Produto -->
               <div class="col-sm-12 col-md-4">
                 <input type="hidden" formControlName="multiplo">
-                <label for="selectCliente"><b>#{{i + 1}} Produto</b><small style="padding-left: 15px" *ngIf="cadastroPedidoForm['controls'].itens['controls'].length > 1" (click)="removerItem(i, cadastroPedidoForm)">Remover</small></label>
+                <label for="selectCliente">
+                  <b>#{{i + 1}} Produto</b>
+                  <small class="remover" *ngIf="cadastroPedidoForm['controls'].itens['controls'].length > 1" (click)="removerItem(i, cadastroPedidoForm)">Remover</small>
+                </label>
                 <select class="form-control" id="selectProduto" formControlName="produto" (change)="selecionarProduto(i, $event.target.value, cadastroPedidoForm)">
                   <option disabled selected>Selecione um produto</option>
                   <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} | R${{p.preco | currency:'BRL':'':'1.2-2' }}</option>
@@ -54,9 +72,9 @@
                 <label>Preço unitário</label>
                 <div class="input-group">
                   <div class="input-group-prepend">
-                    <span class="input-group-text" id="basic-addon1">R$</span>
+                    <span class="input-group-text">R$</span>
                   </div>
-                  <input type="text" class="form-control" id="precoUni" formControlName="precoUni" (input)="calcRentabilidade(i, $event.target.value, cadastroPedidoForm)">
+                  <input type="number" class="form-control" id="precoUni" formControlName="precoUni" (input)="calcRentabilidade(i, $event.target.value, cadastroPedidoForm)">
                 </div>
                 <small class="text-muted" *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('precoUni').value">*Campo obrigatório</small>
               </div>
@@ -66,6 +84,7 @@
                 <label>Rentabilidade</label>
                 <br>
                 <input type="text" class="form-control" formControlName="rentabilidade">
+                <small class="text-muted" *ngIf="cadastroPedidoForm['controls'].itens['controls'][i].get('rentabilidade').value === 'Ruim'">Melhore a rentabilidade</small>
               </div>
             </div>
           </div>
@@ -82,6 +101,8 @@
             </div>
           </div>
         </div>
+
+        <br><br>
 
         <div class="row">
           <div class="col">
@@ -102,20 +123,44 @@
       <h5 class="card-title">Lista de Pedidos</h5>
       <h6 class="card-subtitle text-muted" *ngIf="pedidos.length > 0">Pedidos já cadastrados</h6>
       <h6 class="card-subtitle text-muted" *ngIf="pedidos.length === 0">Nenhum pedido cadastrado no momento!</h6>
+
       <br>
 
-      <div class="card" *ngFor="let p of pedidos">
-        <div class="card-body">
-          <h6 class="card-subtitle text-muted">
-            Cliente
+      <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="alerts.excluir.sucesso">
+        Pedido excluido com sucesso!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
 
-            <div class="float-right" style="padding-top: 5px">
-              <button type="button" class="btn btn-primary" style="margin-left: 5px" data-toggle="modal" [attr.data-target]="'#modalPedido' + p._id">Ver Pedido</button>
-              <button type="button" class="btn btn-success" style="margin-left: 5px" (click)="abrirModalEditar(p)">Editar</button>
-              <button type="button" class="btn btn-danger" style="margin-left: 5px" (click)="deletePedido(p._id)">Excluir</button>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="alerts.excluir.erro">
+        Erro ao exluir o pedido! Tente novamente mais tarde.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="card card-pedido" *ngFor="let p of pedidos">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-6">
+              <h6 class="card-subtitle text-muted">
+                Cliente
+              </h6>
+              <h6 class="card-title" style="margin-bottom: 0">{{getClienteNome(p.cliente)}}</h6>
             </div>
-          </h6>
-          <h6 class="card-title" style="margin-bottom: 0">{{getClienteNome(p.cliente)}}</h6>
+            <div class="col-sm-12 col-md-6">
+              <div class="float-right" style="padding-top: 5px">
+                <button type="button" class="btn btn-primary" style="margin-left: 5px" data-toggle="modal" [attr.data-target]="'#modalPedido' + p._id">Ver Pedido</button>
+                <button type="button" class="btn btn-success" style="margin-left: 5px" (click)="abrirModalEditar(p)">
+                  <i class="material-icons">edit</i>
+                </button>
+                <button type="button" class="btn btn-danger" style="margin-left: 5px" (click)="delete(p._id)">
+                  <i class="material-icons">delete_forever</i>
+                </button>
+              </div>
+            </div>
+          </div>
 
           <!-- Modal: Lista de itens do pedido -->
           <div class="modal fade" id="{{'modalPedido' + p._id}}" role="dialog" [attr.aria-labelledby]="'#modalPedido' + p._id" aria-hidden="true">
@@ -130,27 +175,27 @@
                 <div class="modal-body">
                   <table class="table">
                     <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Produto</th>
-                      <th scope="col">Qtd.</th>
-                      <th scope="col">Preço Uni.</th>
-                      <th scope="col">Rentabilidade</th>
-                    </tr>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Produto</th>
+                        <th scope="col">Qtd.</th>
+                        <th scope="col">Preço Uni.</th>
+                        <th scope="col">Rentabilidade</th>
+                      </tr>
                     </thead>
                     <tbody>
-                    <tr *ngFor="let i of p.itens; let cont=index">
-                      <th scope="row">{{cont + 1}}</th>
-                      <td>{{getProdutoNome(i.produto)}}</td>
-                      <td>{{i.quantidade}}</td>
-                      <td>{{i.precoUni}}</td>
-                      <td>{{i.rentabilidade}}</td>
-                    </tr>
+                      <tr *ngFor="let i of p.itens; let cont=index">
+                        <th scope="row">{{cont + 1}}</th>
+                        <td>{{getProdutoNome(i.produto)}}</td>
+                        <td>{{i.quantidade}}</td>
+                        <td>R${{i.precoUni | currency:'BRL':'':'1.2-2' }}</td>
+                        <td>{{i.rentabilidade}}</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                  <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Voltar</button>
                   <button type="button" class="btn btn-success" (click)="abrirModalEditar(p)" data-toggle="modal" [attr.data-target]="'#modalPedido' + p._id">Editar</button>
                 </div>
               </div>
@@ -174,8 +219,23 @@
           </button>
         </div>
 
-        <form [formGroup]="editarPedidoForm" (ngSubmit)="update(editarPedidoForm.getRawValue())">
+        <form id="editarPedidoForm" [formGroup]="editarPedidoForm" (ngSubmit)="update(editarPedidoForm.getRawValue())">
           <div class="modal-body">
+
+            <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="alerts.editar.sucesso">
+              Pedido atualizado com sucesso!
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="alerts.editar.erro">
+              Erro ao atualizar pedido! Tente novamente mais tarde.
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
             <div class="form-group">
               <input type="hidden" formControlName="pedido">
               <label for="selectCliente">Cliente</label>
@@ -194,7 +254,10 @@
                   <!-- Produto -->
                   <div class="col-sm-12 col-md-4">
                     <input type="hidden" formControlName="multiplo">
-                    <label for="selectCliente"><b>#{{i + 1}} Produto</b><small style="padding-left: 15px" *ngIf="editarPedidoForm['controls'].itens['controls'].length > 1" (click)="removerItem(i, editarPedidoForm)">Remover</small></label>
+                    <label for="selectCliente">
+                      <b>#{{i + 1}} Produto</b>
+                      <small class="remover" *ngIf="editarPedidoForm['controls'].itens['controls'].length > 1" (click)="removerItem(i, editarPedidoForm)">Remover</small>
+                    </label>
                     <select class="form-control" id="selectPeodutoEdit" formControlName="produto" (change)="selecionarProduto(i, $event.target.value, editarPedidoForm)">
                       <option disabled selected>Selecione um produto</option>
                       <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} | R${{p.preco}}</option>
@@ -231,6 +294,7 @@
                     <label>Rentabilidade</label>
                     <br>
                     <input type="text" class="form-control" id="rentabilidadeEdit" formControlName="rentabilidade">
+                    <small class="text-muted" *ngIf="editarPedidoForm['controls'].itens['controls'][i].get('rentabilidade').value === 'Ruim'">Melhore a rentabilidade</small>
                   </div>
                 </div>
               </div>
@@ -250,7 +314,7 @@
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Voltar</button>
             <button type="submit" class="btn btn-primary" [disabled]="!editarPedidoForm.valid">Salvar</button>
           </div>
 

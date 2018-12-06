@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from './services/api.service';
 import { QuantidadeValidator } from './validators/quantidade.validator';
-import {FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 
 import { Pedido } from './models/Pedido';
@@ -14,7 +14,7 @@ declare let $: any;
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [CurrencyPipe]
+  providers: [CurrencyPipe, FormBuilder]
 })
 
 export class AppComponent implements OnInit {
@@ -26,6 +26,13 @@ export class AppComponent implements OnInit {
   public produtos: any[] = [];
   public editarPedidoForm: FormGroup;
   public cadastroPedidoForm: FormGroup;
+
+  // Controle para os alertas dos formulários
+  public alerts: any = {
+    editar: { sucesso: false, erro: false },
+    excluir: { sucesso: false, erro: false },
+    cadastro: { sucesso: false, erro: false }
+  };
 
   public auxPedido: any;
 
@@ -42,6 +49,11 @@ export class AppComponent implements OnInit {
     });
   }
 
+  /*
+   * Parametros: none
+   * Faz a requisição para a API e retorna os Clientes cadastrados
+   * Executa a função getProdutos()
+   */
   getClientes() {
     this.api.getClientes().subscribe((res: Cliente[]) => {
       this.clientes = res;
@@ -49,6 +61,11 @@ export class AppComponent implements OnInit {
     });
   }
 
+  /*
+   * Parametros: none
+   * Faz a requisição para a API e retorna os Produtos cadastrados
+   * Executa a função getPedidos()
+   */
   getProdutos() {
     this.api.getProdutos().subscribe((res: Produto[]) => {
       this.produtos = res;
@@ -56,22 +73,22 @@ export class AppComponent implements OnInit {
     });
   }
 
+  /*
+   * Parametros: none
+   * Faz a requisição para a API e retorna os Pedidos cadastrados
+   */
   getPedidos() {
     this.api.getPedidos().subscribe((res: Pedido[]) => {
       this.pedidos = res;
     });
   }
 
-  deletePedido(id: string) {
-    this.api.deletePedido(id).subscribe(res => {
-      if (res) {
-        this.getPedidos();
-      }
-    });
-  }
-
+  /*
+   * Parametros: pedido (models = Pedido)
+   * Faz o cadastro do pedido. Recebe o valor do formulário de cadastro (cadastroPedidoForm)
+   * Em caso de sucesso ou erro o usuário é notificado
+   */
   create(pedido: Pedido) {
-    this.api.postPedido(pedido)
     this.api.postPedido(pedido)
       .subscribe(res => {
         if (res) {
@@ -82,58 +99,130 @@ export class AppComponent implements OnInit {
             'cliente': [null, Validators.required],
             'itens': this.fb.array([ this.novoItem() ])
           });
+          this.alerts.cadastro.sucesso = true;
+          setInterval(() => {
+            this.alerts.cadastro.sucesso = false;
+          }, 5000);
+        } else {
+          this.alerts.cadastro.erro = true;
+          setInterval(() => {
+            this.alerts.cadastro.erro = false;
+          }, 5000);
         }
       });
   }
 
+  /*
+   * Parametros: pedido (models = Pedido)
+   * Faz a atualização do pedido. Recebe o valor do formulário de edição (editarPedidoForm)
+   * Em caso de sucesso ou erro o usuário é notificado
+   */
   update(pedido: Pedido) {
     this.api.updatePedido(pedido)
       .subscribe(res => {
         if (res) {
           this.getPedidos();
+          this.alerts.editar.sucesso = true;
+          setInterval(() => {
+            this.alerts.editar.sucesso = false;
+          }, 5000);
+        } else {
+          this.alerts.editar.erro = true;
+          setInterval(() => {
+            this.alerts.editar.erro = false;
+          }, 5000);
         }
       });
   }
 
+  /*
+   * Parametros: id do pedido (string)
+   * Exclui o pedido o pedido
+   * Em caso de sucesso ou erro o usuário é notificado
+   */
+  delete(id: string) {
+    this.api.deletePedido(id).subscribe(res => {
+      if (res) {
+        this.getPedidos();
+        this.alerts.excluir.sucesso = true;
+        setInterval(() => {
+          this.alerts.excluir.sucesso = false;
+        }, 5000);
+      } else {
+        this.alerts.excluir.erro = true;
+        setInterval(() => {
+          this.alerts.excluir.erro = false;
+        }, 5000);
+      }
+    });
+  }
+
+  /*
+   * Parametros: id do Cliente (string)
+   * Retorna o nome do Cliente (string)
+   */
   getClienteNome(id: string) {
     return this.clientes[this.clientes.findIndex(c => c._id === id)].nome;
   }
 
+  /*
+   * Parametros: id do Produto (string)
+   * Retorna o nome do Produto (string)
+   */
   getProdutoNome(id: string) {
     return this.produtos[this.produtos.findIndex(p => p._id === id)].nome;
   }
 
+  /*
+   * Parametros: item (opicional)
+   * Adiciona uma linha ao formulário para o cadastro de um novo Produto
+   */
   novoItem(item?: any) {
+    // Caso se tenha os valores para os campos
     if (item) {
       return this.fb.group({
         'produto': [item.produto, Validators.required],
-        'precoUni': [item.precoUni, Validators.required],
         'multiplo': [item.multiplo, Validators.required],
-        'quantidade': [item.quantidade, Validators.required],
+        'precoUni': [item.precoUni, Validators.compose([Validators.required])],
+        'quantidade': [item.quantidade, Validators.compose([Validators.min(0),  Validators.required])],
         'rentabilidade': [{ value: item.rentabilidade, disabled: true }, Validators.required]
       }, { validator: QuantidadeValidator.quantidadeMultiplo });
+    // Caso seja um campo novo
     } else {
       return this.fb.group({
         'produto': [null, Validators.required],
-        'precoUni': [null, Validators.required],
         'multiplo': [null, Validators.required],
-        'quantidade': [null, Validators.required],
+        'precoUni': [null, Validators.compose([Validators.required])],
+        'quantidade': [null, Validators.compose([Validators.min(0),  Validators.required])],
         'rentabilidade': [{ value: null, disabled: true }, Validators.required]
       }, { validator: QuantidadeValidator.quantidadeMultiplo });
     }
   }
 
-  adicionarItem(formulario) {
+  /*
+  * Parametros: formulário
+  * Adiciona um novo item na lista de itens do formulário para cadastro no formulário
+  */
+  adicionarItem(formulario: any) {
     const ctrl = <FormArray>formulario.controls['itens'];
     ctrl.push(this.novoItem());
   }
 
+  /*
+  * Parametros: index (posição na lista de itens), formulário
+  * Remove o item da lista
+  */
   removerItem(index: number, formulario: any) {
     const ctrl = <FormArray>formulario.controls['itens'];
     ctrl.removeAt(index);
   }
 
-  selecionarProduto(index, idProduto, formulario) {
+  /*
+  * Parametros: index (posição na lista de itens), id do produto, formulário
+  * Quando o usuário selecionar o produto no <select> do formulário esta função completa os
+  * outros campos do formulário
+  */
+  selecionarProduto(index: number, idProduto: string, formulario: any) {
     this.produtos.filter(p => {
       if (p._id === idProduto) {
         (<FormArray>formulario.controls['itens']).at(index).get('precoUni').setValue(p.preco);
@@ -146,8 +235,14 @@ export class AppComponent implements OnInit {
     });
   }
 
-  calcRentabilidade(index, precoUni, formulario) {
+  /*
+  * Parametros: index (posição na lista de itens), preço da unidade, formulário
+  * Quando o usuário alterar o preço da unidade a rentabilidade é automaticamente calculada
+  * Caso a rentabilidade seja ruim o formulário é invalidado
+  */
+  calcRentabilidade(index: number, precoUni: any, formulario: any) {
     precoUni = parseFloat(precoUni);
+    formulario.controls['itens'].at(index).get('precoUni').setValidators(Validators.min(this.auxPedido[index].precoUni - this.auxPedido[index].precoUni * 0.1));
 
     if (precoUni > this.auxPedido[index].precoUni) {
       (<FormArray>formulario.controls['itens']).at(index).get('rentabilidade').setValue('Ótima');
@@ -158,6 +253,11 @@ export class AppComponent implements OnInit {
     }
   }
 
+  /*
+  * Parametros: pedido (model = Pedido)
+  * Abre o modal (modalEditarItem) para a edição de um pedido já cadastrado
+  * Completa automaticamente os campos do formulário de edição (editarPedidoForm)
+  */
   abrirModalEditar(pedido: Pedido) {
     this.editarPedidoForm = this.fb.group({
       'pedido': [{ value: pedido._id, disabled: true }, Validators.required],
@@ -176,7 +276,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.title = 'Fullstack - Pedidos';
+    this.title = 'fullstack-pedidos';
     this.getClientes();
   }
 }

@@ -1,1 +1,35 @@
+.remover {
+  color: red;
+  cursor: pointer;
+  padding-left: 15px;
+}
 
+table thead th {
+  border: 0;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #FAFAFA;
+}
+
+.material-icons {
+  position: relative;
+  display: block;
+}
+
+.modal-header, .modal-footer {
+  border: 0;
+}
+
+.card-pedido .card-body {
+  padding: 15px 0 15px 0;
+}
+
+.card-pedido {
+  border: 0;
+  border-radius: 0;
+}
+
+.card-pedido:nth-child(odd) {
+  border-top: 1px solid #CCC;
+}

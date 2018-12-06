@@ -33,7 +33,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, '/dist/fullstack-pedidos-front')));
+app.use(express.static(path.join(__dirname, '/dist/fullstack-pedidos')));
 
 // Rotas
 app.use('/', index);
