@@ -1,13 +1,20 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from './services/api.service';
 import { QuantidadeValidator } from './validators/quantidade.validator';
-import {FormBuilder, FormGroup, FormArray, Validators, FormControl, Form} from '@angular/forms';
+import {FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { CurrencyPipe } from '@angular/common';
+
+import { Pedido } from './models/Pedido';
+import { Cliente } from './models/Cliente';
+import { Produto } from './models/Produto';
+
 declare let $: any;
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  providers: [CurrencyPipe]
 })
 
 export class AppComponent implements OnInit {
@@ -15,14 +22,14 @@ export class AppComponent implements OnInit {
 
   public title: string;
   public pedidos: any[] = [];
-  public clientes: any[] = [];
+  public clientes: Cliente[] = [];
   public produtos: any[] = [];
   public editarPedidoForm: FormGroup;
   public cadastroPedidoForm: FormGroup;
 
   public auxPedido: any;
 
-  constructor(private api: ApiService, private fb: FormBuilder) {
+  constructor(private api: ApiService, private fb: FormBuilder, private cp: CurrencyPipe) {
     this.editarPedidoForm = this.fb.group({
       'pedido': [null, Validators.required],
       'cliente': [null, Validators.required],
@@ -36,21 +43,21 @@ export class AppComponent implements OnInit {
   }
 
   getClientes() {
-    this.api.getClientes().subscribe(res => {
+    this.api.getClientes().subscribe((res: Cliente[]) => {
       this.clientes = res;
       this.getProdutos();
     });
   }
 
   getProdutos() {
-    this.api.getProdutos().subscribe(res => {
+    this.api.getProdutos().subscribe((res: Produto[]) => {
       this.produtos = res;
       this.getPedidos();
     });
   }
 
   getPedidos() {
-    this.api.getPedidos().subscribe(res => {
+    this.api.getPedidos().subscribe((res: Pedido[]) => {
       this.pedidos = res;
     });
   }
@@ -63,7 +70,8 @@ export class AppComponent implements OnInit {
     });
   }
 
-  create(pedido: any) {
+  create(pedido: Pedido) {
+    this.api.postPedido(pedido)
     this.api.postPedido(pedido)
       .subscribe(res => {
         if (res) {
@@ -78,7 +86,7 @@ export class AppComponent implements OnInit {
       });
   }
 
-  update(pedido: any) {
+  update(pedido: Pedido) {
     this.api.updatePedido(pedido)
       .subscribe(res => {
         if (res) {
@@ -100,16 +108,16 @@ export class AppComponent implements OnInit {
       return this.fb.group({
         'produto': [item.produto, Validators.required],
         'precoUni': [item.precoUni, Validators.required],
-        'quantidade': [item.quantidade, Validators.required],
         'multiplo': [item.multiplo, Validators.required],
+        'quantidade': [item.quantidade, Validators.required],
         'rentabilidade': [{ value: item.rentabilidade, disabled: true }, Validators.required]
       }, { validator: QuantidadeValidator.quantidadeMultiplo });
     } else {
       return this.fb.group({
         'produto': [null, Validators.required],
         'precoUni': [null, Validators.required],
-        'quantidade': [null, Validators.required],
         'multiplo': [null, Validators.required],
+        'quantidade': [null, Validators.required],
         'rentabilidade': [{ value: null, disabled: true }, Validators.required]
       }, { validator: QuantidadeValidator.quantidadeMultiplo });
     }
@@ -123,15 +131,14 @@ export class AppComponent implements OnInit {
   removerItem(index: number, formulario: any) {
     const ctrl = <FormArray>formulario.controls['itens'];
     ctrl.removeAt(index);
-    this.auxPedido.splice(index, 1);
   }
 
   selecionarProduto(index, idProduto, formulario) {
     this.produtos.filter(p => {
       if (p._id === idProduto) {
         (<FormArray>formulario.controls['itens']).at(index).get('precoUni').setValue(p.preco);
-        (<FormArray>formulario.controls['itens']).at(index).get('quantidade').setValue(0);
         (<FormArray>formulario.controls['itens']).at(index).get('multiplo').setValue(p.multiplo);
+        (<FormArray>formulario.controls['itens']).at(index).get('quantidade').setValue(p.multiplo);
         (<FormArray>formulario.controls['itens']).at(index).get('rentabilidade').setValue('Boa');
 
         this.auxPedido = formulario.controls['itens'].value;
@@ -151,7 +158,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  abrirModalEditar(pedido: any) {
+  abrirModalEditar(pedido: Pedido) {
     this.editarPedidoForm = this.fb.group({
       'pedido': [{ value: pedido._id, disabled: true }, Validators.required],
       'cliente': [pedido.cliente, Validators.required],

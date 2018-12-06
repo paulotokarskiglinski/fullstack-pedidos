@@ -4,6 +4,10 @@ import { environment } from '../../environments/environment';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
+import { Pedido } from './../models/Pedido';
+import { Cliente } from './../models/Cliente';
+import { Produto } from './../models/Produto';
+
 @Injectable()
 export class ApiService {
 
@@ -17,9 +21,9 @@ export class ApiService {
 
   // Clientes
   // GET
-  getClientes(): Observable<any[]> {
+  getClientes(): Observable<Cliente[]> {
     return this.http.get(this.apiUrl.clientes, this.getHttpOptions()).pipe(
-      map((res: any) => {
+      map((res: Cliente[]) => {
         return res;
       })
     );
@@ -27,9 +31,9 @@ export class ApiService {
 
   // Produtos
   // GET
-  getProdutos(): Observable<any[]> {
+  getProdutos(): Observable<Produto[]> {
     return this.http.get(this.apiUrl.produtos, this.getHttpOptions()).pipe(
-      map((res: any) => {
+      map((res: Produto[]) => {
         return res;
       })
     );
@@ -37,21 +41,21 @@ export class ApiService {
 
   // Pedidos
   // GET
-  getPedidos(): Observable<any[]> {
+  getPedidos(): Observable<Pedido[]> {
     return this.http.get(this.apiUrl.pedidos, this.getHttpOptions()).pipe(
-      map((res: any) => {
+      map((res: Pedido[]) => {
         return res;
       })
     );
   }
 
   // POST
-  postPedido(model: any) {
+  postPedido(model: Pedido) {
     return this.http.post(this.apiUrl.pedidos, model, this.getHttpOptions());
   }
 
   // PUT
-  updatePedido(model: any) {
+  updatePedido(model: Pedido) {
     return this.http.put(this.apiUrl.pedidos, model, this.getHttpOptions());
   }
 
