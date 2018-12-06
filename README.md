@@ -1,27 +1,32 @@
-# FullstackPedidosFront
+# FullstackPedidos
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.2.
+Este projeto utiliza: 
+
+[Express](https://expressjs.com) versão 4.16.0<br>
+[Angular CLI](https://github.com/angular/angular-cli) versão 6.2.2.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Para executar localmente esta aplicação, abra uma primeira guia do terminal e execute o comando `npm start` para iniciar o servidor NodeJS da API. Em uma segunda aba do terminal execute o comando `npm run-script app` para inicial a aplicação em Angular.
 
-## Code scaffolding
+Acesse a aplicação em `http://localhost:4200` e a API em `http://localhost:3000`
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Build e Deploy
 
-## Build
+Para fazer o deploy desta aplicação no [Heroku](https://heroku.com), primeiro realize o commit das alterações no [GitHub](https://github.com/paulotokarski/fullstack-pedidos) e, de forma manual, execute o Deploy do Branch no painel da aplicação.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+## Testes
 
-## Running unit tests
+Execute o comando `ng test` para realizar os testes através do [Karma](https://karma-runner.github.io).
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Os seguintes testes estão previstos:
+<ul>
+  <li>Verifica a existência do formulário de cadastro na página;</li>
+  <li>Verifica a existência do formulário de edição na página;</li>
+  <li>Testes de conexão com API.</li>
+</ul>
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## Mais Ajuda
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Execute o comando `ng help` no terminal ou verifique a documentação [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
