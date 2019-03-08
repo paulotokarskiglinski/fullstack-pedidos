@@ -1,6 +1,8 @@
 # FullstackPedidos
 
-Este projeto utiliza: 
+Sistema de controle de pedidos. De forma simples, cadastre, remova, edite e controle os seus pedidos.
+
+# Este projeto utiliza: 
 
 [Express](https://expressjs.com) versão 4.16.0<br>
 [Angular CLI](https://github.com/angular/angular-cli) versão 6.2.2.
