@@ -1,12 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ApiService } from './services/api.service';
-import { QuantidadeValidator } from './validators/quantidade.validator';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import { CurrencyPipe } from '@angular/common';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {ApiService} from './services/api.service';
+import {QuantidadeValidator} from './validators/quantidade.validator';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {CurrencyPipe} from '@angular/common';
 
-import { Pedido } from './models/Pedido';
-import { Cliente } from './models/Cliente';
-import { Produto } from './models/Produto';
+import {Pedido} from './models/Pedido';
+import {Cliente} from './models/Cliente';
+import {Produto} from './models/Produto';
 
 declare let $: any;
 
@@ -21,20 +21,19 @@ export class AppComponent implements OnInit {
   @ViewChild('modalEditarItem') modalEditarItem;
 
   public title: string;
-  public pedidos: any[] = [];
+  public auxPedido: any;
+  public pedidos: Pedido[] = [];
+  public produtos: Produto[] = [];
   public clientes: Cliente[] = [];
-  public produtos: any[] = [];
   public editarPedidoForm: FormGroup;
   public cadastroPedidoForm: FormGroup;
 
   // Controle para os alertas dos formulários
   public alerts: any = {
-    editar: { sucesso: false, erro: false },
-    excluir: { sucesso: false, erro: false },
-    cadastro: { sucesso: false, erro: false }
+    editar: {sucesso: false, erro: false},
+    excluir: {sucesso: false, erro: false},
+    cadastro: {sucesso: false, erro: false}
   };
-
-  public auxPedido: any;
 
   constructor(private api: ApiService, private fb: FormBuilder, private cp: CurrencyPipe) {
     this.editarPedidoForm = this.fb.group({
@@ -45,8 +44,13 @@ export class AppComponent implements OnInit {
 
     this.cadastroPedidoForm = this.fb.group({
       'cliente': [null, Validators.required],
-      'itens': this.fb.array([ this.novoItem() ])
+      'itens': this.fb.array([this.novoItem()])
     });
+  }
+
+  ngOnInit(): void {
+    this.title = 'fullstack-pedidos';
+    this.getClientes();
   }
 
   /*
@@ -54,7 +58,7 @@ export class AppComponent implements OnInit {
    * Faz a requisição para a API e retorna os Clientes cadastrados
    * Executa a função getProdutos()
    */
-  getClientes() {
+  getClientes(): void {
     this.api.getClientes().subscribe((res: Cliente[]) => {
       this.clientes = res;
       this.getProdutos();
@@ -66,7 +70,7 @@ export class AppComponent implements OnInit {
    * Faz a requisição para a API e retorna os Produtos cadastrados
    * Executa a função getPedidos()
    */
-  getProdutos() {
+  getProdutos(): void {
     this.api.getProdutos().subscribe((res: Produto[]) => {
       this.produtos = res;
       this.getPedidos();
@@ -77,7 +81,7 @@ export class AppComponent implements OnInit {
    * Parametros: none
    * Faz a requisição para a API e retorna os Pedidos cadastrados
    */
-  getPedidos() {
+  getPedidos(): void {
     this.api.getPedidos().subscribe((res: Pedido[]) => {
       this.pedidos = res;
     });
@@ -88,7 +92,7 @@ export class AppComponent implements OnInit {
    * Faz o cadastro do pedido. Recebe o valor do formulário de cadastro (cadastroPedidoForm)
    * Em caso de sucesso ou erro o usuário é notificado
    */
-  create(pedido: Pedido) {
+  create(pedido: Pedido): void {
     this.api.postPedido(pedido)
       .subscribe(res => {
         if (res) {
@@ -97,7 +101,7 @@ export class AppComponent implements OnInit {
           this.cadastroPedidoForm.reset();
           this.cadastroPedidoForm = this.fb.group({
             'cliente': [null, Validators.required],
-            'itens': this.fb.array([ this.novoItem() ])
+            'itens': this.fb.array([this.novoItem()])
           });
           this.alerts.cadastro.sucesso = true;
           setInterval(() => {
@@ -117,7 +121,7 @@ export class AppComponent implements OnInit {
    * Faz a atualização do pedido. Recebe o valor do formulário de edição (editarPedidoForm)
    * Em caso de sucesso ou erro o usuário é notificado
    */
-  update(pedido: Pedido) {
+  update(pedido: Pedido): void {
     this.api.updatePedido(pedido)
       .subscribe(res => {
         if (res) {
@@ -140,7 +144,7 @@ export class AppComponent implements OnInit {
    * Exclui o pedido o pedido
    * Em caso de sucesso ou erro o usuário é notificado
    */
-  delete(id: string) {
+  delete(id: string): void {
     this.api.deletePedido(id).subscribe(res => {
       if (res) {
         this.getPedidos();
@@ -161,7 +165,7 @@ export class AppComponent implements OnInit {
    * Parametros: id do Cliente (string)
    * Retorna o nome do Cliente (string)
    */
-  getClienteNome(id: string) {
+  getClienteNome(id: string): string {
     return this.clientes[this.clientes.findIndex(c => c._id === id)].nome;
   }
 
@@ -169,7 +173,7 @@ export class AppComponent implements OnInit {
    * Parametros: id do Produto (string)
    * Retorna o nome do Produto (string)
    */
-  getProdutoNome(id: string) {
+  getProdutoNome(id: string): string {
     return this.produtos[this.produtos.findIndex(p => p._id === id)].nome;
   }
 
@@ -177,25 +181,25 @@ export class AppComponent implements OnInit {
    * Parametros: item (opicional)
    * Adiciona uma linha ao formulário para o cadastro de um novo Produto
    */
-  novoItem(item?: any) {
+  novoItem(item?: any): FormGroup {
     // Caso se tenha os valores para os campos
     if (item) {
       return this.fb.group({
         'produto': [item.produto, Validators.required],
         'multiplo': [item.multiplo, Validators.required],
         'precoUni': [item.precoUni, Validators.compose([Validators.required])],
-        'quantidade': [item.quantidade, Validators.compose([Validators.min(0),  Validators.required])],
-        'rentabilidade': [{ value: item.rentabilidade, disabled: true }, Validators.required]
-      }, { validator: QuantidadeValidator.quantidadeMultiplo });
-    // Caso seja um campo novo
+        'quantidade': [item.quantidade, Validators.compose([Validators.min(0), Validators.required])],
+        'rentabilidade': [{value: item.rentabilidade, disabled: true}, Validators.required]
+      }, {validator: QuantidadeValidator.quantidadeMultiplo});
+      // Caso seja um campo novo
     } else {
       return this.fb.group({
         'produto': [null, Validators.required],
         'multiplo': [null, Validators.required],
         'precoUni': [null, Validators.compose([Validators.required])],
-        'quantidade': [null, Validators.compose([Validators.min(0),  Validators.required])],
-        'rentabilidade': [{ value: null, disabled: true }, Validators.required]
-      }, { validator: QuantidadeValidator.quantidadeMultiplo });
+        'quantidade': [null, Validators.compose([Validators.min(0), Validators.required])],
+        'rentabilidade': [{value: null, disabled: true}, Validators.required]
+      }, {validator: QuantidadeValidator.quantidadeMultiplo});
     }
   }
 
@@ -203,7 +207,7 @@ export class AppComponent implements OnInit {
   * Parametros: formulário
   * Adiciona um novo item na lista de itens do formulário para cadastro no formulário
   */
-  adicionarItem(formulario: any) {
+  adicionarItem(formulario: any): void {
     const ctrl = <FormArray>formulario.controls['itens'];
     ctrl.push(this.novoItem());
   }
@@ -212,7 +216,7 @@ export class AppComponent implements OnInit {
   * Parametros: index (posição na lista de itens), formulário
   * Remove o item da lista
   */
-  removerItem(index: number, formulario: any) {
+  removerItem(index: number, formulario: any): void {
     const ctrl = <FormArray>formulario.controls['itens'];
     ctrl.removeAt(index);
   }
@@ -222,7 +226,7 @@ export class AppComponent implements OnInit {
   * Quando o usuário selecionar o produto no <select> do formulário esta função completa os
   * outros campos do formulário
   */
-  selecionarProduto(index: number, idProduto: string, formulario: any) {
+  selecionarProduto(index: number, idProduto: string, formulario: any): void {
     this.produtos.filter(p => {
       if (p._id === idProduto) {
         (<FormArray>formulario.controls['itens']).at(index).get('precoUni').setValue(p.preco);
@@ -240,7 +244,7 @@ export class AppComponent implements OnInit {
   * Quando o usuário alterar o preço da unidade a rentabilidade é automaticamente calculada
   * Caso a rentabilidade seja ruim o formulário é invalidado
   */
-  calcRentabilidade(index: number, precoUni: any, formulario: any) {
+  calcRentabilidade(index: number, precoUni: any, formulario: any): void {
     precoUni = parseFloat(precoUni);
     formulario.controls['itens'].at(index).get('precoUni').setValidators(Validators.min(this.auxPedido[index].precoUni - this.auxPedido[index].precoUni * 0.1));
 
@@ -258,9 +262,9 @@ export class AppComponent implements OnInit {
   * Abre o modal (modalEditarItem) para a edição de um pedido já cadastrado
   * Completa automaticamente os campos do formulário de edição (editarPedidoForm)
   */
-  abrirModalEditar(pedido: Pedido) {
+  abrirModalEditar(pedido: Pedido): void {
     this.editarPedidoForm = this.fb.group({
-      'pedido': [{ value: pedido._id, disabled: true }, Validators.required],
+      'pedido': [{value: pedido._id, disabled: true}, Validators.required],
       'cliente': [pedido.cliente, Validators.required],
       'itens': this.fb.array([])
     });
@@ -273,10 +277,5 @@ export class AppComponent implements OnInit {
     });
 
     $(this.modalEditarItem.nativeElement).modal('show');
-  }
-
-  ngOnInit() {
-    this.title = 'fullstack-pedidos';
-    this.getClientes();
   }
 }

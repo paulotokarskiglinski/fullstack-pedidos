@@ -12,28 +12,30 @@
 
       <br>
 
-      <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="alerts.cadastro.sucesso">
+      <div *ngIf="alerts.cadastro.sucesso" class="alert alert-success alert-dismissible fade show" role="alert">
         Cadastro realizado com sucesso!
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
-      <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="alerts.cadastro.erro">
+      <div *ngIf="alerts.cadastro.erro" class="alert alert-danger alert-dismissible fade show" role="alert">
         Erro ao cadastrar o pedido! Tente novamente mais tarde.
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
-      <form id="cadastroPedidoForm" [formGroup]="cadastroPedidoForm" (ngSubmit)="create(cadastroPedidoForm.getRawValue())">
+      <form (ngSubmit)="create(cadastroPedidoForm.getRawValue())" [formGroup]="cadastroPedidoForm"
+            id="cadastroPedidoForm">
+        <!-- Cliente -->
         <div class="form-group">
           <label for="selectCliente">Cliente</label>
-          <select class="form-control" id="selectCliente" formControlName="cliente">
+          <select class="form-control" formControlName="cliente" id="selectCliente">
             <option disabled selected>Selecione um cliente</option>
             <option *ngFor="let c of clientes" value="{{c._id}}">{{c.nome}}</option>
           </select>
-          <small class="text-muted" *ngIf="!cadastroPedidoForm.get('cliente').value">*Campo obrigatório</small>
+          <small *ngIf="!cadastroPedidoForm.get('cliente').value" class="text-muted">*Campo obrigatório</small>
         </div>
 
         <br>
@@ -43,26 +45,41 @@
             <div [formGroupName]="i" class="row" style="margin-bottom: 20px">
               <!-- Produto -->
               <div class="col-sm-12 col-md-4">
-                <input type="hidden" formControlName="multiplo">
+                <input formControlName="multiplo" type="hidden">
                 <label for="selectCliente">
                   <b>#{{i + 1}} Produto</b>
-                  <small class="remover" *ngIf="cadastroPedidoForm['controls'].itens['controls'].length > 1" (click)="removerItem(i, cadastroPedidoForm)">Remover</small>
+                  <small (click)="removerItem(i, cadastroPedidoForm)"
+                         *ngIf="cadastroPedidoForm['controls'].itens['controls'].length > 1"
+                         class="remover">Remover
+                  </small>
                 </label>
-                <select class="form-control" id="selectProduto" formControlName="produto" (change)="selecionarProduto(i, $event.target.value, cadastroPedidoForm)">
+                <select (change)="selecionarProduto(i, $event.target.value, cadastroPedidoForm)" class="form-control"
+                        formControlName="produto"
+                        id="selectProduto">
                   <option disabled selected>Selecione um produto</option>
-                  <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} | R${{p.preco | currency:'BRL':'':'1.2-2' }}</option>
+                  <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} |
+                    R${{p.preco | currency:'BRL':'':'1.2-2' }}</option>
                 </select>
-                <small class="text-muted" *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('produto').value">*Campo obrigatório</small>
+                <small *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('produto').value"
+                       class="text-muted">*Campo
+                  obrigatório
+                </small>
               </div>
 
               <!-- Quantidade -->
               <div class="col-sm-12 col-md-2">
                 <label for="selectCliente">Quantidade</label>
-                <input type="number" id="qtd" class="form-control" min="0" step="{{cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}" formControlName="quantidade">
-                <small class="text-muted" *ngIf="cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value > 0 && cadastroPedidoForm['controls'].itens['controls'][i].get('quantidade').value % cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value !== 0">
-                  Apenas qtds. multiplas de {{cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}
+                <input class="form-control" formControlName="quantidade" id="qtd" min="0"
+                       step="{{cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}"
+                       type="number">
+                <small
+                  *ngIf="cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value > 0 && cadastroPedidoForm['controls'].itens['controls'][i].get('quantidade').value % cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value !== 0"
+                  class="text-muted">
+                  Apenas qtds. multiplas
+                  de {{cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}
                 </small>
-                <small class="text-muted" *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('quantidade').value">
+                <small *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('quantidade').value"
+                       class="text-muted">
                   *Campo obrigatório
                 </small>
               </div>
@@ -74,17 +91,25 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text">R$</span>
                   </div>
-                  <input type="number" class="form-control" id="precoUni" formControlName="precoUni" (input)="calcRentabilidade(i, $event.target.value, cadastroPedidoForm)">
+                  <input (input)="calcRentabilidade(i, $event.target.value, cadastroPedidoForm)" class="form-control"
+                         formControlName="precoUni" id="precoUni"
+                         type="number">
                 </div>
-                <small class="text-muted" *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('precoUni').value">*Campo obrigatório</small>
+                <small *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('precoUni').value"
+                       class="text-muted">*Campo
+                  obrigatório
+                </small>
               </div>
 
               <!-- Rentabilidade -->
               <div class="col-sm-12 col-md-2">
                 <label>Rentabilidade</label>
                 <br>
-                <input type="text" class="form-control" formControlName="rentabilidade">
-                <small class="text-muted" *ngIf="cadastroPedidoForm['controls'].itens['controls'][i].get('rentabilidade').value === 'Ruim'">Melhore a rentabilidade</small>
+                <input class="form-control" formControlName="rentabilidade" type="text">
+                <small *ngIf="cadastroPedidoForm['controls'].itens['controls'][i].get('rentabilidade').value === 'Ruim'"
+                       class="text-muted">
+                  Melhore a rentabilidade
+                </small>
               </div>
             </div>
           </div>
@@ -96,7 +121,9 @@
           <div class="col">
             <div class="float-right">
               <div class="float-right">
-                <button type="button" class="btn btn-outline-info" (click)="adicionarItem(cadastroPedidoForm)">Adicionar Item</button>
+                <button (click)="adicionarItem(cadastroPedidoForm)" class="btn btn-outline-info" type="button">Adicionar
+                  Item
+                </button>
               </div>
             </div>
           </div>
@@ -106,7 +133,8 @@
 
         <div class="row">
           <div class="col">
-            <button type="submit" class="btn btn-primary" [disabled]="!cadastroPedidoForm.valid">Cadastrar Pedido</button>
+            <button [disabled]="!cadastroPedidoForm.valid" class="btn btn-primary" type="submit">Cadastrar Pedido
+            </button>
           </div>
         </div>
 
@@ -121,26 +149,26 @@
     <div class="card-body">
 
       <h5 class="card-title">Lista de Pedidos</h5>
-      <h6 class="card-subtitle text-muted" *ngIf="pedidos.length > 0">Pedidos já cadastrados</h6>
-      <h6 class="card-subtitle text-muted" *ngIf="pedidos.length === 0">Nenhum pedido cadastrado no momento!</h6>
+      <h6 *ngIf="pedidos.length > 0" class="card-subtitle text-muted">Pedidos já cadastrados</h6>
+      <h6 *ngIf="pedidos.length === 0" class="card-subtitle text-muted">Nenhum pedido cadastrado no momento!</h6>
 
       <br>
 
-      <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="alerts.excluir.sucesso">
+      <div *ngIf="alerts.excluir.sucesso" class="alert alert-success alert-dismissible fade show" role="alert">
         Pedido excluido com sucesso!
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
-      <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="alerts.excluir.erro">
+      <div *ngIf="alerts.excluir.erro" class="alert alert-danger alert-dismissible fade show" role="alert">
         Erro ao exluir o pedido! Tente novamente mais tarde.
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
-      <div class="card card-pedido" *ngFor="let p of pedidos">
+      <div *ngFor="let p of pedidos" class="card card-pedido">
         <div class="card-body">
           <div class="row">
             <div class="col-sm-12 col-md-6">
@@ -151,11 +179,14 @@
             </div>
             <div class="col-sm-12 col-md-6">
               <div class="float-right" style="padding-top: 5px">
-                <button type="button" class="btn btn-primary" style="margin-left: 5px" data-toggle="modal" [attr.data-target]="'#modalPedido' + p._id">Ver Pedido</button>
-                <button type="button" class="btn btn-success" style="margin-left: 5px" (click)="abrirModalEditar(p)">
+                <button [attr.data-target]="'#modalPedido' + p._id" class="btn btn-primary" data-toggle="modal"
+                        style="margin-left: 5px"
+                        type="button">Ver Pedido
+                </button>
+                <button (click)="abrirModalEditar(p)" class="btn btn-success" style="margin-left: 5px" type="button">
                   <i class="material-icons">edit</i>
                 </button>
-                <button type="button" class="btn btn-danger" style="margin-left: 5px" (click)="delete(p._id)">
+                <button (click)="delete(p._id)" class="btn btn-danger" style="margin-left: 5px" type="button">
                   <i class="material-icons">delete_forever</i>
                 </button>
               </div>
@@ -163,40 +194,45 @@
           </div>
 
           <!-- Modal: Lista de itens do pedido -->
-          <div class="modal fade" id="{{'modalPedido' + p._id}}" role="dialog" [attr.aria-labelledby]="'#modalPedido' + p._id" aria-hidden="true">
+          <div [attr.aria-labelledby]="'#modalPedido' + p._id" aria-hidden="true" class="modal fade"
+               id="{{'modalPedido' + p._id}}" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLongTitle">Itens do pedido de {{getClienteNome(p.cliente)}}</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Itens do pedido
+                    de {{getClienteNome(p.cliente)}}</h5>
+                  <button aria-label="Close" class="close" data-dismiss="modal" type="button">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">
                   <table class="table">
                     <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Produto</th>
-                        <th scope="col">Qtd.</th>
-                        <th scope="col">Preço Uni.</th>
-                        <th scope="col">Rentabilidade</th>
-                      </tr>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Produto</th>
+                      <th scope="col">Qtd.</th>
+                      <th scope="col">Preço Uni.</th>
+                      <th scope="col">Rentabilidade</th>
+                    </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let i of p.itens; let cont=index">
-                        <th scope="row">{{cont + 1}}</th>
-                        <td>{{getProdutoNome(i.produto)}}</td>
-                        <td>{{i.quantidade}}</td>
-                        <td>R${{i.precoUni | currency:'BRL':'':'1.2-2' }}</td>
-                        <td>{{i.rentabilidade}}</td>
-                      </tr>
+                    <tr *ngFor="let i of p.itens; let cont=index">
+                      <th scope="row">{{cont + 1}}</th>
+                      <td>{{getProdutoNome(i.produto)}}</td>
+                      <td>{{i.quantidade}}</td>
+                      <td>R${{i.precoUni | currency:'BRL':'':'1.2-2' }}</td>
+                      <td>{{i.rentabilidade}}</td>
+                    </tr>
                     </tbody>
                   </table>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Voltar</button>
-                  <button type="button" class="btn btn-success" (click)="abrirModalEditar(p)" data-toggle="modal" [attr.data-target]="'#modalPedido' + p._id">Editar</button>
+                  <button class="btn btn-outline-secondary" data-dismiss="modal" type="button">Voltar</button>
+                  <button (click)="abrirModalEditar(p)" [attr.data-target]="'#modalPedido' + p._id"
+                          class="btn btn-success" data-toggle="modal"
+                          type="button">Editar
+                  </button>
                 </div>
               </div>
             </div>
@@ -209,41 +245,41 @@
   </div>
 
   <!-- Modal: Editar item no pedido -->
-  <div #modalEditarItem class="modal fade" id="modalEditarItem" aria-labelledby="modalEditarItem" aria-hidden="true">
+  <div #modalEditarItem aria-hidden="true" aria-labelledby="modalEditarItem" class="modal fade" id="modalEditarItem">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalCenterTitle">Editar pedido</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button aria-label="Close" class="close" data-dismiss="modal" type="button">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
 
-        <form id="editarPedidoForm" [formGroup]="editarPedidoForm" (ngSubmit)="update(editarPedidoForm.getRawValue())">
+        <form (ngSubmit)="update(editarPedidoForm.getRawValue())" [formGroup]="editarPedidoForm" id="editarPedidoForm">
           <div class="modal-body">
 
-            <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="alerts.editar.sucesso">
+            <div *ngIf="alerts.editar.sucesso" class="alert alert-success alert-dismissible fade show" role="alert">
               Pedido atualizado com sucesso!
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <button aria-label="Close" class="close" data-dismiss="alert" type="button">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
 
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="alerts.editar.erro">
+            <div *ngIf="alerts.editar.erro" class="alert alert-danger alert-dismissible fade show" role="alert">
               Erro ao atualizar pedido! Tente novamente mais tarde.
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <button aria-label="Close" class="close" data-dismiss="alert" type="button">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
 
             <div class="form-group">
-              <input type="hidden" formControlName="pedido">
+              <input formControlName="pedido" type="hidden">
               <label for="selectCliente">Cliente</label>
               <select class="form-control" formControlName="cliente">
                 <option disabled selected>Selecione um cliente</option>
                 <option *ngFor="let c of clientes" value="{{c._id}}">{{c.nome}}</option>
               </select>
-              <small class="text-muted" *ngIf="!editarPedidoForm.get('cliente').value">*Campo obrigatório</small>
+              <small *ngIf="!editarPedidoForm.get('cliente').value" class="text-muted">*Campo obrigatório</small>
             </div>
 
             <br>
@@ -253,26 +289,40 @@
                 <div [formGroupName]="i" class="row" style="margin-bottom: 20px">
                   <!-- Produto -->
                   <div class="col-sm-12 col-md-4">
-                    <input type="hidden" formControlName="multiplo">
+                    <input formControlName="multiplo" type="hidden">
                     <label for="selectCliente">
                       <b>#{{i + 1}} Produto</b>
-                      <small class="remover" *ngIf="editarPedidoForm['controls'].itens['controls'].length > 1" (click)="removerItem(i, editarPedidoForm)">Remover</small>
+                      <small (click)="removerItem(i, editarPedidoForm)"
+                             *ngIf="editarPedidoForm['controls'].itens['controls'].length > 1"
+                             class="remover">Remover
+                      </small>
                     </label>
-                    <select class="form-control" id="selectPeodutoEdit" formControlName="produto" (change)="selecionarProduto(i, $event.target.value, editarPedidoForm)">
+                    <select (change)="selecionarProduto(i, $event.target.value, editarPedidoForm)" class="form-control"
+                            formControlName="produto"
+                            id="selectPeodutoEdit">
                       <option disabled selected>Selecione um produto</option>
                       <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} | R${{p.preco}}</option>
                     </select>
-                    <small class="text-muted" *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('produto').value">*Campo obrigatório</small>
+                    <small *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('produto').value"
+                           class="text-muted">*Campo
+                      obrigatório
+                    </small>
                   </div>
 
                   <!-- Quantidade -->
                   <div class="col-sm-12 col-md-2">
                     <label for="selectCliente">Quantidade</label>
-                    <input type="number" class="form-control" id="quantidadeEdit" min="0" step="{{editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}" formControlName="quantidade">
-                    <small class="text-muted" *ngIf="editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value > 0 && editarPedidoForm['controls'].itens['controls'][i].get('quantidade').value % editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value !== 0">
-                      Apenas qtds. multiplas de {{editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}
+                    <input class="form-control" formControlName="quantidade" id="quantidadeEdit" min="0"
+                           step="{{editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}"
+                           type="number">
+                    <small
+                      *ngIf="editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value > 0 && editarPedidoForm['controls'].itens['controls'][i].get('quantidade').value % editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value !== 0"
+                      class="text-muted">
+                      Apenas qtds. multiplas
+                      de {{editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}
                     </small>
-                    <small class="text-muted" *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('quantidade').value">
+                    <small *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('quantidade').value"
+                           class="text-muted">
                       *Campo obrigatório
                     </small>
                   </div>
@@ -284,17 +334,26 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text">R$</span>
                       </div>
-                      <input type="number" class="form-control" id="precoUniEdit" formControlName="precoUni" (input)="calcRentabilidade(i, $event.target.value, editarPedidoForm)" placeholder="00,00">
+                      <input (input)="calcRentabilidade(i, $event.target.value, editarPedidoForm)" class="form-control"
+                             formControlName="precoUni" id="precoUniEdit"
+                             placeholder="00,00" type="number">
                     </div>
-                    <small class="text-muted" *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('precoUni').value">*Campo obrigatório</small>
+                    <small *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('precoUni').value"
+                           class="text-muted">*Campo
+                      obrigatório
+                    </small>
                   </div>
 
                   <!-- Rentabilidade -->
                   <div class="col-sm-12 col-md-2">
                     <label>Rentabilidade</label>
                     <br>
-                    <input type="text" class="form-control" id="rentabilidadeEdit" formControlName="rentabilidade">
-                    <small class="text-muted" *ngIf="editarPedidoForm['controls'].itens['controls'][i].get('rentabilidade').value === 'Ruim'">Melhore a rentabilidade</small>
+                    <input class="form-control" formControlName="rentabilidade" id="rentabilidadeEdit" type="text">
+                    <small
+                      *ngIf="editarPedidoForm['controls'].itens['controls'][i].get('rentabilidade').value === 'Ruim'"
+                      class="text-muted">
+                      Melhore a rentabilidade
+                    </small>
                   </div>
                 </div>
               </div>
@@ -306,7 +365,9 @@
               <div class="col">
                 <div class="float-right">
                   <div class="float-right">
-                    <button type="button" class="btn btn-outline-info" (click)="adicionarItem(editarPedidoForm)">Adicionar Item</button>
+                    <button (click)="adicionarItem(editarPedidoForm)" class="btn btn-outline-info" type="button">
+                      Adicionar Item
+                    </button>
                   </div>
                 </div>
               </div>
@@ -314,8 +375,8 @@
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Voltar</button>
-            <button type="submit" class="btn btn-primary" [disabled]="!editarPedidoForm.valid">Salvar</button>
+            <button class="btn btn-outline-secondary" data-dismiss="modal" type="button">Voltar</button>
+            <button [disabled]="!editarPedidoForm.valid" class="btn btn-primary" type="submit">Salvar</button>
           </div>
 
         </form>

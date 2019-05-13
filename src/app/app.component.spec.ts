@@ -1,7 +1,7 @@
-import { TestBed, async } from '@angular/core/testing';
-import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
-import { ApiService } from './services/api.service';
+import {async, TestBed} from '@angular/core/testing';
+import {AppComponent} from './app.component';
+import {HttpClientModule} from '@angular/common/http';
+import {ApiService} from './services/api.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 describe('AppComponent', () => {
@@ -52,7 +52,9 @@ describe('AppComponent', () => {
   it('Requisição da API: Clientes', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    expect (apiService.getClientes().subscribe(res => { expect(res.length).toBeGreaterThanOrEqual(0); }));
+    expect(apiService.getClientes().subscribe(res => {
+      expect(res.length).toBeGreaterThanOrEqual(0);
+    }));
   }));
 
   /*
@@ -62,7 +64,9 @@ describe('AppComponent', () => {
   it('Requisição da API: Produtos', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    expect (apiService.getProdutos().subscribe(res => { expect(res.length).toBeGreaterThanOrEqual(0); }));
+    expect(apiService.getProdutos().subscribe(res => {
+      expect(res.length).toBeGreaterThanOrEqual(0);
+    }));
   }));
 
   /*
@@ -72,7 +76,9 @@ describe('AppComponent', () => {
   it('Requisição da API: Pedidos', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    expect (apiService.getPedidos().subscribe(res => { expect(res.length).toBeGreaterThanOrEqual(0); }));
+    expect(apiService.getPedidos().subscribe(res => {
+      expect(res.length).toBeGreaterThanOrEqual(0);
+    }));
   }));
 
 });

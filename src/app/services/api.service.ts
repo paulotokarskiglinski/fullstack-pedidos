@@ -1,22 +1,23 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from '../../environments/environment';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {environment} from '../../environments/environment';
+import {map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
-import { Pedido } from './../models/Pedido';
-import { Cliente } from './../models/Cliente';
-import { Produto } from './../models/Produto';
+import {Pedido} from './../models/Pedido';
+import {Cliente} from './../models/Cliente';
+import {Produto} from './../models/Produto';
 
 @Injectable()
 export class ApiService {
 
   private apiUrl = environment.apiUrl;
 
-  public constructor(private http: HttpClient) { }
+  public constructor(private http: HttpClient) {
+  }
 
   getHttpOptions() {
-    return { headers: new HttpHeaders({'Content-Type': 'application/json'}) };
+    return {headers: new HttpHeaders({'Content-Type': 'application/json'})};
   }
 
   // Clientes

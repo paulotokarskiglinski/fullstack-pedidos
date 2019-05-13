@@ -12,5 +12,5 @@ export class Pedido {
       quantidade: number,
       rentabilidade: string
     }
-  ];
+    ];
 }

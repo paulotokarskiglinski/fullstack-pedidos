@@ -1,4 +1,4 @@
-import { FormControl } from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 export class QuantidadeValidator {
 
@@ -9,10 +9,10 @@ export class QuantidadeValidator {
       } else if (form.value.quantidade % form.value.multiplo === 0) {
         return null;
       } else {
-        return { multiplo: 'Valor do múltiplo: ' + form.value.multiplo };
+        return {multiplo: 'Valor do múltiplo: ' + form.value.multiplo};
       }
     } else {
-      return { quantidade: 'A quantidade do produto deve ser maior que 0' };
+      return {quantidade: 'A quantidade do produto deve ser maior que 0'};
     }
   }
 

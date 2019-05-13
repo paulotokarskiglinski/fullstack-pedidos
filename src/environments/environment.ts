@@ -1,5 +1,5 @@
 /*
- * Para executat localment
+ * Para executar localmente
  * Servidor: http://localhost
  * Porta: 3000
  */
