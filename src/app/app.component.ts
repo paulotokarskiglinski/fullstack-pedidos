@@ -7,6 +7,7 @@ import {CurrencyPipe} from '@angular/common';
 import {Pedido} from './models/Pedido';
 import {Cliente} from './models/Cliente';
 import {Produto} from './models/Produto';
+import {SwUpdate} from '@angular/service-worker';
 
 declare let $: any;
 
@@ -20,7 +21,6 @@ declare let $: any;
 export class AppComponent implements OnInit {
   @ViewChild('modalEditarItem') modalEditarItem;
 
-  public title: string;
   public auxPedido: any;
   public pedidos: Pedido[] = [];
   public produtos: Produto[] = [];
@@ -35,7 +35,11 @@ export class AppComponent implements OnInit {
     cadastro: {sucesso: false, erro: false}
   };
 
-  constructor(private api: ApiService, private fb: FormBuilder, private cp: CurrencyPipe) {
+  constructor(private api: ApiService, private fb: FormBuilder, private updates: SwUpdate) {
+    updates.available.subscribe(event => {
+      updates.activateUpdate().then(() => document.location.reload());
+    });
+
     this.editarPedidoForm = this.fb.group({
       'pedido': [null, Validators.required],
       'cliente': [null, Validators.required],
@@ -49,7 +53,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.title = 'fullstack-pedidos';
     this.getClientes();
   }
 

@@ -1,388 +1,370 @@
-<nav class="navbar navbar-light navbar-dark bg-dark fixed-top">
-  <h1 class="navbar-brand mb-0 h1">{{title}}</h1>
-</nav>
+<div class="card">
+  <div class="card-body">
 
-<div class="container">
+    <h5 class="card-title">Cadastrar Pedido</h5>
+    <h6 class="card-subtitle text-muted">Faça o cadastro de um novo pedido</h6>
 
-  <div class="card">
-    <div class="card-body">
+    <br>
 
-      <h5 class="card-title">Cadastrar Pedido</h5>
-      <h6 class="card-subtitle text-muted">Faça o cadastro de um novo pedido</h6>
+    <div *ngIf="alerts.cadastro.sucesso" class="alert alert-success alert-dismissible fade show" role="alert">
+      Cadastro realizado com sucesso!
+      <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div *ngIf="alerts.cadastro.erro" class="alert alert-danger alert-dismissible fade show" role="alert">
+      Erro ao cadastrar o pedido! Tente novamente mais tarde.
+      <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <form (ngSubmit)="create(cadastroPedidoForm.getRawValue())" [formGroup]="cadastroPedidoForm"
+          id="cadastroPedidoForm">
+      <!-- Cliente -->
+      <div class="form-group">
+        <label for="selectCliente">Cliente</label>
+        <select class="form-control" formControlName="cliente" id="selectCliente">
+          <option disabled selected>Selecione um cliente</option>
+          <option *ngFor="let c of clientes" value="{{c._id}}">{{c.nome}}</option>
+        </select>
+        <small *ngIf="!cadastroPedidoForm.get('cliente').value" class="text-muted">*Campo obrigatório</small>
+      </div>
 
       <br>
 
-      <div *ngIf="alerts.cadastro.sucesso" class="alert alert-success alert-dismissible fade show" role="alert">
-        Cadastro realizado com sucesso!
-        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <div *ngIf="alerts.cadastro.erro" class="alert alert-danger alert-dismissible fade show" role="alert">
-        Erro ao cadastrar o pedido! Tente novamente mais tarde.
-        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <form (ngSubmit)="create(cadastroPedidoForm.getRawValue())" [formGroup]="cadastroPedidoForm"
-            id="cadastroPedidoForm">
-        <!-- Cliente -->
-        <div class="form-group">
-          <label for="selectCliente">Cliente</label>
-          <select class="form-control" formControlName="cliente" id="selectCliente">
-            <option disabled selected>Selecione um cliente</option>
-            <option *ngFor="let c of clientes" value="{{c._id}}">{{c.nome}}</option>
-          </select>
-          <small *ngIf="!cadastroPedidoForm.get('cliente').value" class="text-muted">*Campo obrigatório</small>
-        </div>
-
-        <br>
-
-        <div formArrayName="itens">
-          <div *ngFor="let itens of cadastroPedidoForm['controls'].itens['controls']; let i=index">
-            <div [formGroupName]="i" class="row" style="margin-bottom: 20px">
-              <!-- Produto -->
-              <div class="col-sm-12 col-md-4">
-                <input formControlName="multiplo" type="hidden">
-                <label for="selectCliente">
-                  <b>#{{i + 1}} Produto</b>
-                  <small (click)="removerItem(i, cadastroPedidoForm)"
-                         *ngIf="cadastroPedidoForm['controls'].itens['controls'].length > 1"
-                         class="remover">Remover
-                  </small>
-                </label>
-                <select (change)="selecionarProduto(i, $event.target.value, cadastroPedidoForm)" class="form-control"
-                        formControlName="produto"
-                        id="selectProduto">
-                  <option disabled selected>Selecione um produto</option>
-                  <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} |
-                    R${{p.preco | currency:'BRL':'':'1.2-2' }}</option>
-                </select>
-                <small *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('produto').value"
-                       class="text-muted">*Campo
-                  obrigatório
+      <div formArrayName="itens">
+        <div *ngFor="let itens of cadastroPedidoForm['controls'].itens['controls']; let i=index">
+          <div [formGroupName]="i" class="row" style="margin-bottom: 20px">
+            <!-- Produto -->
+            <div class="col-sm-12 col-md-4">
+              <input formControlName="multiplo" type="hidden">
+              <label for="selectCliente">
+                <b>#{{i + 1}} Produto</b>
+                <small (click)="removerItem(i, cadastroPedidoForm)"
+                       *ngIf="cadastroPedidoForm['controls'].itens['controls'].length > 1"
+                       class="remover">Remover
                 </small>
-              </div>
+              </label>
+              <select (change)="selecionarProduto(i, $event.target.value, cadastroPedidoForm)" class="form-control"
+                      formControlName="produto"
+                      id="selectProduto">
+                <option disabled selected>Selecione um produto</option>
+                <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} |
+                  R${{p.preco | currency:'BRL':'':'1.2-2' }}</option>
+              </select>
+              <small *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('produto').value"
+                     class="text-muted">*Campo
+                obrigatório
+              </small>
+            </div>
 
-              <!-- Quantidade -->
-              <div class="col-sm-12 col-md-2">
-                <label for="selectCliente">Quantidade</label>
-                <input class="form-control" formControlName="quantidade" id="qtd" min="0"
-                       step="{{cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}"
-                       type="number">
-                <small
-                  *ngIf="cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value > 0 && cadastroPedidoForm['controls'].itens['controls'][i].get('quantidade').value % cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value !== 0"
-                  class="text-muted">
-                  Apenas qtds. multiplas
-                  de {{cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}
-                </small>
-                <small *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('quantidade').value"
-                       class="text-muted">
-                  *Campo obrigatório
-                </small>
-              </div>
+            <!-- Quantidade -->
+            <div class="col-sm-12 col-md-2">
+              <label for="selectCliente">Quantidade</label>
+              <input class="form-control" formControlName="quantidade" id="qtd" min="0"
+                     step="{{cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}"
+                     type="number">
+              <small
+                *ngIf="cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value > 0 && cadastroPedidoForm['controls'].itens['controls'][i].get('quantidade').value % cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value !== 0"
+                class="text-muted">
+                Apenas qtds. multiplas
+                de {{cadastroPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}
+              </small>
+              <small *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('quantidade').value"
+                     class="text-muted">
+                *Campo obrigatório
+              </small>
+            </div>
 
-              <!-- Preço uni. -->
-              <div class="col-sm-12 col-md-4">
-                <label>Preço unitário</label>
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">R$</span>
-                  </div>
-                  <input (input)="calcRentabilidade(i, $event.target.value, cadastroPedidoForm)" class="form-control"
-                         formControlName="precoUni" id="precoUni"
-                         type="number">
+            <!-- Preço uni. -->
+            <div class="col-sm-12 col-md-4">
+              <label>Preço unitário</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">R$</span>
                 </div>
-                <small *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('precoUni').value"
-                       class="text-muted">*Campo
-                  obrigatório
-                </small>
+                <input (input)="calcRentabilidade(i, $event.target.value, cadastroPedidoForm)" class="form-control"
+                       formControlName="precoUni" id="precoUni"
+                       type="number">
               </div>
+              <small *ngIf="!cadastroPedidoForm['controls'].itens['controls'][i].get('precoUni').value"
+                     class="text-muted">*Campo
+                obrigatório
+              </small>
+            </div>
 
-              <!-- Rentabilidade -->
-              <div class="col-sm-12 col-md-2">
-                <label>Rentabilidade</label>
-                <br>
-                <input class="form-control" formControlName="rentabilidade" type="text">
-                <small *ngIf="cadastroPedidoForm['controls'].itens['controls'][i].get('rentabilidade').value === 'Ruim'"
-                       class="text-muted">
-                  Melhore a rentabilidade
-                </small>
-              </div>
+            <!-- Rentabilidade -->
+            <div class="col-sm-12 col-md-2">
+              <label>Rentabilidade</label>
+              <br>
+              <input class="form-control" formControlName="rentabilidade" type="text">
+              <small *ngIf="cadastroPedidoForm['controls'].itens['controls'][i].get('rentabilidade').value === 'Ruim'"
+                     class="text-muted">
+                Melhore a rentabilidade
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <button (click)="adicionarItem(cadastroPedidoForm)" class="btn btn-outline-info float-left" type="button">Adicionar
+            Item
+          </button>
+        </div>
+        <div class="col-sm-6">
+          <button [disabled]="!cadastroPedidoForm.valid" class="btn btn-primary float-right" type="submit">Cadastrar
+          </button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<br><br>
+
+<div class="card">
+  <div class="card-body">
+
+    <h5 class="card-title">Lista de Pedidos</h5>
+    <h6 *ngIf="pedidos.length > 0" class="card-subtitle text-muted">Pedidos já cadastrados</h6>
+    <h6 *ngIf="pedidos.length === 0" class="card-subtitle text-muted">Nenhum pedido cadastrado no momento!</h6>
+
+    <br>
+
+    <div *ngIf="alerts.excluir.sucesso" class="alert alert-success alert-dismissible fade show" role="alert">
+      Pedido excluido com sucesso!
+      <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div *ngIf="alerts.excluir.erro" class="alert alert-danger alert-dismissible fade show" role="alert">
+      Erro ao exluir o pedido! Tente novamente mais tarde.
+      <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div *ngFor="let p of pedidos" class="card card-pedido">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <h6 class="card-subtitle text-muted">
+              Cliente
+            </h6>
+            <h6 class="card-title" style="margin-bottom: 0">{{getClienteNome(p.cliente)}}</h6>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="float-right" style="padding-top: 5px">
+              <button [attr.data-target]="'#modalPedido' + p._id" class="btn btn-primary" data-toggle="modal"
+                      style="margin-left: 5px"
+                      type="button">Ver Pedido
+              </button>
+              <button (click)="abrirModalEditar(p)" class="btn btn-success" style="margin-left: 5px" type="button">
+                <i class="material-icons">edit</i>
+              </button>
+              <button (click)="delete(p._id)" class="btn btn-danger" style="margin-left: 5px" type="button">
+                <i class="material-icons">delete_forever</i>
+              </button>
             </div>
           </div>
         </div>
 
-        <br>
-
-        <div class="row">
-          <div class="col">
-            <div class="float-right">
-              <div class="float-right">
-                <button (click)="adicionarItem(cadastroPedidoForm)" class="btn btn-outline-info" type="button">Adicionar
-                  Item
+        <!-- Modal: Lista de itens do pedido -->
+        <div [attr.aria-labelledby]="'#modalPedido' + p._id" aria-hidden="true" class="modal fade"
+             id="{{'modalPedido' + p._id}}" role="dialog">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Itens do pedido
+                  de {{getClienteNome(p.cliente)}}</h5>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Produto</th>
+                    <th scope="col">Qtd.</th>
+                    <th scope="col">Preço Uni.</th>
+                    <th scope="col">Rentabilidade</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let i of p.itens; let cont=index">
+                    <th scope="row">{{cont + 1}}</th>
+                    <td>{{getProdutoNome(i.produto)}}</td>
+                    <td>{{i.quantidade}}</td>
+                    <td>R${{i.precoUni | currency:'BRL':'':'1.2-2' }}</td>
+                    <td>{{i.rentabilidade}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-outline-secondary" data-dismiss="modal" type="button">Voltar</button>
+                <button (click)="abrirModalEditar(p)" [attr.data-target]="'#modalPedido' + p._id"
+                        class="btn btn-success" data-toggle="modal"
+                        type="button">Editar
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <br><br>
+      </div>
+    </div>
 
-        <div class="row">
-          <div class="col">
-            <button [disabled]="!cadastroPedidoForm.valid" class="btn btn-primary" type="submit">Cadastrar Pedido
+  </div>
+</div>
+
+<!-- Modal: Editar item no pedido -->
+<div #modalEditarItem aria-hidden="true" aria-labelledby="modalEditarItem" class="modal fade" id="modalEditarItem">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle">Editar pedido</h5>
+        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form (ngSubmit)="update(editarPedidoForm.getRawValue())" [formGroup]="editarPedidoForm" id="editarPedidoForm">
+        <div class="modal-body">
+
+          <div *ngIf="alerts.editar.sucesso" class="alert alert-success alert-dismissible fade show" role="alert">
+            Pedido atualizado com sucesso!
+            <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+              <span aria-hidden="true">&times;</span>
             </button>
           </div>
+
+          <div *ngIf="alerts.editar.erro" class="alert alert-danger alert-dismissible fade show" role="alert">
+            Erro ao atualizar pedido! Tente novamente mais tarde.
+            <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="form-group">
+            <input formControlName="pedido" type="hidden">
+            <label for="selectCliente">Cliente</label>
+            <select class="form-control" formControlName="cliente">
+              <option disabled selected>Selecione um cliente</option>
+              <option *ngFor="let c of clientes" value="{{c._id}}">{{c.nome}}</option>
+            </select>
+            <small *ngIf="!editarPedidoForm.get('cliente').value" class="text-muted">*Campo obrigatório</small>
+          </div>
+
+          <br>
+
+          <div formArrayName="itens">
+            <div *ngFor="let itens of editarPedidoForm['controls'].itens['controls']; let i=index">
+              <div [formGroupName]="i" class="row" style="margin-bottom: 20px">
+                <!-- Produto -->
+                <div class="col-sm-12 col-md-4">
+                  <input formControlName="multiplo" type="hidden">
+                  <label for="selectCliente">
+                    <b>#{{i + 1}} Produto</b>
+                    <small (click)="removerItem(i, editarPedidoForm)"
+                           *ngIf="editarPedidoForm['controls'].itens['controls'].length > 1"
+                           class="remover">Remover
+                    </small>
+                  </label>
+                  <select (change)="selecionarProduto(i, $event.target.value, editarPedidoForm)" class="form-control"
+                          formControlName="produto"
+                          id="selectPeodutoEdit">
+                    <option disabled selected>Selecione um produto</option>
+                    <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} | R${{p.preco}}</option>
+                  </select>
+                  <small *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('produto').value"
+                         class="text-muted">*Campo
+                    obrigatório
+                  </small>
+                </div>
+
+                <!-- Quantidade -->
+                <div class="col-sm-12 col-md-2">
+                  <label for="selectCliente">Quantidade</label>
+                  <input class="form-control" formControlName="quantidade" id="quantidadeEdit" min="0"
+                         step="{{editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}"
+                         type="number">
+                  <small
+                    *ngIf="editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value > 0 && editarPedidoForm['controls'].itens['controls'][i].get('quantidade').value % editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value !== 0"
+                    class="text-muted">
+                    Apenas qtds. multiplas
+                    de {{editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}
+                  </small>
+                  <small *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('quantidade').value"
+                         class="text-muted">
+                    *Campo obrigatório
+                  </small>
+                </div>
+
+                <!-- Preco uni. -->
+                <div class="col-sm-12 col-md-4">
+                  <label>Preço unitário</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">R$</span>
+                    </div>
+                    <input (input)="calcRentabilidade(i, $event.target.value, editarPedidoForm)" class="form-control"
+                           formControlName="precoUni" id="precoUniEdit"
+                           placeholder="00,00" type="number">
+                  </div>
+                  <small *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('precoUni').value"
+                         class="text-muted">*Campo
+                    obrigatório
+                  </small>
+                </div>
+
+                <!-- Rentabilidade -->
+                <div class="col-sm-12 col-md-2">
+                  <label>Rentabilidade</label>
+                  <br>
+                  <input class="form-control" formControlName="rentabilidade" id="rentabilidadeEdit" type="text">
+                  <small
+                    *ngIf="editarPedidoForm['controls'].itens['controls'][i].get('rentabilidade').value === 'Ruim'"
+                    class="text-muted">
+                    Melhore a rentabilidade
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <br>
+
+          <div class="row">
+            <div class="col">
+              <div class="float-right">
+                <div class="float-right">
+                  <button (click)="adicionarItem(editarPedidoForm)" class="btn btn-outline-info" type="button">
+                    Adicionar Item
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-dismiss="modal" type="button">Voltar</button>
+          <button [disabled]="!editarPedidoForm.valid" class="btn btn-primary" type="submit">Salvar</button>
         </div>
 
       </form>
 
     </div>
   </div>
-
-  <br><br>
-
-  <div class="card">
-    <div class="card-body">
-
-      <h5 class="card-title">Lista de Pedidos</h5>
-      <h6 *ngIf="pedidos.length > 0" class="card-subtitle text-muted">Pedidos já cadastrados</h6>
-      <h6 *ngIf="pedidos.length === 0" class="card-subtitle text-muted">Nenhum pedido cadastrado no momento!</h6>
-
-      <br>
-
-      <div *ngIf="alerts.excluir.sucesso" class="alert alert-success alert-dismissible fade show" role="alert">
-        Pedido excluido com sucesso!
-        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <div *ngIf="alerts.excluir.erro" class="alert alert-danger alert-dismissible fade show" role="alert">
-        Erro ao exluir o pedido! Tente novamente mais tarde.
-        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <div *ngFor="let p of pedidos" class="card card-pedido">
-        <div class="card-body">
-          <div class="row">
-            <div class="col-sm-12 col-md-6">
-              <h6 class="card-subtitle text-muted">
-                Cliente
-              </h6>
-              <h6 class="card-title" style="margin-bottom: 0">{{getClienteNome(p.cliente)}}</h6>
-            </div>
-            <div class="col-sm-12 col-md-6">
-              <div class="float-right" style="padding-top: 5px">
-                <button [attr.data-target]="'#modalPedido' + p._id" class="btn btn-primary" data-toggle="modal"
-                        style="margin-left: 5px"
-                        type="button">Ver Pedido
-                </button>
-                <button (click)="abrirModalEditar(p)" class="btn btn-success" style="margin-left: 5px" type="button">
-                  <i class="material-icons">edit</i>
-                </button>
-                <button (click)="delete(p._id)" class="btn btn-danger" style="margin-left: 5px" type="button">
-                  <i class="material-icons">delete_forever</i>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Modal: Lista de itens do pedido -->
-          <div [attr.aria-labelledby]="'#modalPedido' + p._id" aria-hidden="true" class="modal fade"
-               id="{{'modalPedido' + p._id}}" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLongTitle">Itens do pedido
-                    de {{getClienteNome(p.cliente)}}</h5>
-                  <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <table class="table">
-                    <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Produto</th>
-                      <th scope="col">Qtd.</th>
-                      <th scope="col">Preço Uni.</th>
-                      <th scope="col">Rentabilidade</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let i of p.itens; let cont=index">
-                      <th scope="row">{{cont + 1}}</th>
-                      <td>{{getProdutoNome(i.produto)}}</td>
-                      <td>{{i.quantidade}}</td>
-                      <td>R${{i.precoUni | currency:'BRL':'':'1.2-2' }}</td>
-                      <td>{{i.rentabilidade}}</td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="modal-footer">
-                  <button class="btn btn-outline-secondary" data-dismiss="modal" type="button">Voltar</button>
-                  <button (click)="abrirModalEditar(p)" [attr.data-target]="'#modalPedido' + p._id"
-                          class="btn btn-success" data-toggle="modal"
-                          type="button">Editar
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Modal: Editar item no pedido -->
-  <div #modalEditarItem aria-hidden="true" aria-labelledby="modalEditarItem" class="modal fade" id="modalEditarItem">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCenterTitle">Editar pedido</h5>
-          <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-
-        <form (ngSubmit)="update(editarPedidoForm.getRawValue())" [formGroup]="editarPedidoForm" id="editarPedidoForm">
-          <div class="modal-body">
-
-            <div *ngIf="alerts.editar.sucesso" class="alert alert-success alert-dismissible fade show" role="alert">
-              Pedido atualizado com sucesso!
-              <button aria-label="Close" class="close" data-dismiss="alert" type="button">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-
-            <div *ngIf="alerts.editar.erro" class="alert alert-danger alert-dismissible fade show" role="alert">
-              Erro ao atualizar pedido! Tente novamente mais tarde.
-              <button aria-label="Close" class="close" data-dismiss="alert" type="button">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-
-            <div class="form-group">
-              <input formControlName="pedido" type="hidden">
-              <label for="selectCliente">Cliente</label>
-              <select class="form-control" formControlName="cliente">
-                <option disabled selected>Selecione um cliente</option>
-                <option *ngFor="let c of clientes" value="{{c._id}}">{{c.nome}}</option>
-              </select>
-              <small *ngIf="!editarPedidoForm.get('cliente').value" class="text-muted">*Campo obrigatório</small>
-            </div>
-
-            <br>
-
-            <div formArrayName="itens">
-              <div *ngFor="let itens of editarPedidoForm['controls'].itens['controls']; let i=index">
-                <div [formGroupName]="i" class="row" style="margin-bottom: 20px">
-                  <!-- Produto -->
-                  <div class="col-sm-12 col-md-4">
-                    <input formControlName="multiplo" type="hidden">
-                    <label for="selectCliente">
-                      <b>#{{i + 1}} Produto</b>
-                      <small (click)="removerItem(i, editarPedidoForm)"
-                             *ngIf="editarPedidoForm['controls'].itens['controls'].length > 1"
-                             class="remover">Remover
-                      </small>
-                    </label>
-                    <select (change)="selecionarProduto(i, $event.target.value, editarPedidoForm)" class="form-control"
-                            formControlName="produto"
-                            id="selectPeodutoEdit">
-                      <option disabled selected>Selecione um produto</option>
-                      <option *ngFor="let p of produtos" [value]="p._id">{{p.nome}} | R${{p.preco}}</option>
-                    </select>
-                    <small *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('produto').value"
-                           class="text-muted">*Campo
-                      obrigatório
-                    </small>
-                  </div>
-
-                  <!-- Quantidade -->
-                  <div class="col-sm-12 col-md-2">
-                    <label for="selectCliente">Quantidade</label>
-                    <input class="form-control" formControlName="quantidade" id="quantidadeEdit" min="0"
-                           step="{{editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}"
-                           type="number">
-                    <small
-                      *ngIf="editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value > 0 && editarPedidoForm['controls'].itens['controls'][i].get('quantidade').value % editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value !== 0"
-                      class="text-muted">
-                      Apenas qtds. multiplas
-                      de {{editarPedidoForm['controls'].itens['controls'][i].get('multiplo').value}}
-                    </small>
-                    <small *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('quantidade').value"
-                           class="text-muted">
-                      *Campo obrigatório
-                    </small>
-                  </div>
-
-                  <!-- Preco uni. -->
-                  <div class="col-sm-12 col-md-4">
-                    <label>Preço unitário</label>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text">R$</span>
-                      </div>
-                      <input (input)="calcRentabilidade(i, $event.target.value, editarPedidoForm)" class="form-control"
-                             formControlName="precoUni" id="precoUniEdit"
-                             placeholder="00,00" type="number">
-                    </div>
-                    <small *ngIf="!editarPedidoForm['controls'].itens['controls'][i].get('precoUni').value"
-                           class="text-muted">*Campo
-                      obrigatório
-                    </small>
-                  </div>
-
-                  <!-- Rentabilidade -->
-                  <div class="col-sm-12 col-md-2">
-                    <label>Rentabilidade</label>
-                    <br>
-                    <input class="form-control" formControlName="rentabilidade" id="rentabilidadeEdit" type="text">
-                    <small
-                      *ngIf="editarPedidoForm['controls'].itens['controls'][i].get('rentabilidade').value === 'Ruim'"
-                      class="text-muted">
-                      Melhore a rentabilidade
-                    </small>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <br>
-
-            <div class="row">
-              <div class="col">
-                <div class="float-right">
-                  <div class="float-right">
-                    <button (click)="adicionarItem(editarPedidoForm)" class="btn btn-outline-info" type="button">
-                      Adicionar Item
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn btn-outline-secondary" data-dismiss="modal" type="button">Voltar</button>
-            <button [disabled]="!editarPedidoForm.valid" class="btn btn-primary" type="submit">Salvar</button>
-          </div>
-
-        </form>
-
-      </div>
-    </div>
-  </div>
-
 </div>
