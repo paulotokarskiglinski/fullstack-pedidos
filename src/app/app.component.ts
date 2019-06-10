@@ -19,7 +19,7 @@ declare let $: any;
 })
 
 export class AppComponent implements OnInit {
-  @ViewChild('modalEditarItem') modalEditarItem;
+  @ViewChild('modalEditarItem', {static: false}) modalEditarItem;
 
   public auxPedido: any;
   public pedidos: Pedido[] = [];
