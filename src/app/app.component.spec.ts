@@ -1,10 +1,12 @@
-import {async, TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
-import {HttpClientModule} from '@angular/common/http';
 import {ApiService} from './services/api.service';
+import {async, TestBed} from '@angular/core/testing';
+import {HttpClientModule} from '@angular/common/http';
+import {ServiceWorkerModule} from '@angular/service-worker';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 describe('AppComponent', () => {
+  let model: any;
   let apiService: ApiService;
 
   beforeEach(async(() => {
@@ -13,9 +15,10 @@ describe('AppComponent', () => {
         AppComponent
       ],
       imports: [
-        HttpClientModule,
         FormsModule,
-        ReactiveFormsModule
+        HttpClientModule,
+        ReactiveFormsModule,
+        ServiceWorkerModule.register('', { enabled: false })
       ],
       providers: [ApiService]
     }).compileComponents();
@@ -49,7 +52,7 @@ describe('AppComponent', () => {
    * Testar requisição para a API: Clientes
    * Deve retornar um array de objetos maior ou igual a 0
    */
-  it('Requisição da API: Clientes', async(() => {
+  it('Requisição GET para a API: Clientes', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     expect(apiService.getClientes().subscribe(res => {
@@ -61,7 +64,7 @@ describe('AppComponent', () => {
    * Testar requisição para a API: Produtos
    * Deve retornar um array de objetos maior ou igual a 0
    */
-  it('Requisição da API: Produtos', async(() => {
+  it('Requisição GET para a API: Produtos', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     expect(apiService.getProdutos().subscribe(res => {
@@ -73,11 +76,71 @@ describe('AppComponent', () => {
    * Testar requisição para a API: Pedidos
    * Deve retornar um array de objetos maior ou igual a 0
    */
-  it('Requisição da API: Pedidos', async(() => {
+  it('Requisição GET para a API: Pedidos', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     expect(apiService.getPedidos().subscribe(res => {
       expect(res.length).toBeGreaterThanOrEqual(0);
+    }));
+  }));
+
+  /*
+   * Testar requisição para a API: Pedidos
+   * Deve retornar um valor válido,
+   * indicando assim que o cadastro foi um sucesso
+   */
+  it('Requisição POST para a API: Pedidos', async(() => {
+    model = {
+      cliente: '5cd9bafafb6fc0230bd3b24d',
+      itens: [
+        {
+          multiplo: 2,
+          quantidade: 10,
+          precoUni: '2.00',
+          rentabilidade: 'Ótima',
+          produto: '5cd9bebffb6fc0230bd3b5e3'
+        }
+      ]
+    };
+
+    expect(apiService.postPedido(model).subscribe(res => {
+      model = res;
+      expect(res).not.toBe(null);
+    }));
+  }));
+
+  /*
+   * Testar requisição para a API: Pedidos
+   * Deve retornar um valor válido,
+   * indicando assim que a atualização foi um sucesso
+   */
+  it('Requisição PUT para a API: Pedidos', async(() => {
+    const update: any = {
+      pedido: model._id,
+      itens: [
+        {
+          multiplo: 4,
+          quantidade: 40,
+          precoUni: '2.30',
+          rentabilidade: 'Ótima',
+          produto: '5cd9bebffb6fc0230bd3b5e3'
+        }
+      ]
+    };
+
+    expect(apiService.updatePedido(update).subscribe(res => {
+      expect(res).not.toBe(null);
+    }));
+  }));
+
+  /*
+   * Testar requisição para a API: Pedidos
+   * Deve retornar um valor válido,
+   * indicando assim que o registro foi deletado com sucesso
+   */
+  it('Requisição DELETE para API: Pedidos', async(() => {
+    expect(apiService.deletePedido(model._id).subscribe(res => {
+      expect(res).not.toBe(null);
     }));
   }));
 

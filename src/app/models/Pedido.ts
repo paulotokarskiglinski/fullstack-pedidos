@@ -2,7 +2,7 @@
  * Classe: Pedido
  */
 export class Pedido {
-  _id: string;
+  _id?: string;
   cliente: string;
   itens: [
     {
@@ -12,5 +12,5 @@ export class Pedido {
       quantidade: number,
       rentabilidade: string
     }
-    ];
+  ];
 }
