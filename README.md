@@ -5,7 +5,7 @@ Sistema de controle de pedidos. De forma simples, cadastre, remova, edite e cont
 # Este projeto utiliza: 
 
 [Express](https://expressjs.com) versão 4.16.0<br>
-[Angular](https://angular.io) versão 8.0.0
+[Angular](https://angular.io) versão 9.1.3
 
 ## Development server
 
