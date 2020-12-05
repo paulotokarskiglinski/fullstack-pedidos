@@ -1,6 +1,6 @@
 import {AppComponent} from './app.component';
 import {ApiService} from './services/api.service';
-import {async, TestBed} from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import {HttpClientModule} from '@angular/common/http';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -9,7 +9,7 @@ describe('AppComponent', () => {
   let model: any;
   let apiService: ApiService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         AppComponent
@@ -30,7 +30,7 @@ describe('AppComponent', () => {
    * Verificar se o formulário de cadastro foi implementado
    * É obrigatório que o formulário de cadastro esteja implementado
    */
-  it('Deve conter um formulário de cadastro', async(() => {
+  it('Deve conter um formulário de cadastro', waitForAsync(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
@@ -41,7 +41,7 @@ describe('AppComponent', () => {
    * Verificar se o formulário de edição foi implementado
    * É obrigatório que o formulário de edição esteja implementado
    */
-  it('Deve conter um formulário de edição', async(() => {
+  it('Deve conter um formulário de edição', waitForAsync(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
@@ -52,7 +52,7 @@ describe('AppComponent', () => {
    * Testar requisição para a API: Clientes
    * Deve retornar um array de objetos maior ou igual a 0
    */
-  it('Requisição GET para a API: Clientes', async(() => {
+  it('Requisição GET para a API: Clientes', waitForAsync(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     expect(apiService.getClientes().subscribe(res => {
@@ -64,7 +64,7 @@ describe('AppComponent', () => {
    * Testar requisição para a API: Produtos
    * Deve retornar um array de objetos maior ou igual a 0
    */
-  it('Requisição GET para a API: Produtos', async(() => {
+  it('Requisição GET para a API: Produtos', waitForAsync(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     expect(apiService.getProdutos().subscribe(res => {
@@ -76,7 +76,7 @@ describe('AppComponent', () => {
    * Testar requisição para a API: Pedidos
    * Deve retornar um array de objetos maior ou igual a 0
    */
-  it('Requisição GET para a API: Pedidos', async(() => {
+  it('Requisição GET para a API: Pedidos', waitForAsync(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     expect(apiService.getPedidos().subscribe(res => {
@@ -89,7 +89,7 @@ describe('AppComponent', () => {
    * Deve retornar um valor válido,
    * indicando assim que o cadastro foi um sucesso
    */
-  it('Requisição POST para a API: Pedidos', async(() => {
+  it('Requisição POST para a API: Pedidos', waitForAsync(() => {
     model = {
       cliente: '5cd9bafafb6fc0230bd3b24d',
       itens: [
@@ -114,7 +114,7 @@ describe('AppComponent', () => {
    * Deve retornar um valor válido,
    * indicando assim que a atualização foi um sucesso
    */
-  it('Requisição PUT para a API: Pedidos', async(() => {
+  it('Requisição PUT para a API: Pedidos', waitForAsync(() => {
     const update: any = {
       pedido: model._id,
       itens: [
@@ -138,7 +138,7 @@ describe('AppComponent', () => {
    * Deve retornar um valor válido,
    * indicando assim que o registro foi deletado com sucesso
    */
-  it('Requisição DELETE para API: Pedidos', async(() => {
+  it('Requisição DELETE para API: Pedidos', waitForAsync(() => {
     expect(apiService.deletePedido(model._id).subscribe(res => {
       expect(res).not.toBe(null);
     }));

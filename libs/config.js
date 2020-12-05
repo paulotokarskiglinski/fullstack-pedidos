@@ -1,3 +1,3 @@
 module.exports = {
-  'DATABASE': 'mongodb://fullstack:fullstack123@ds155626.mlab.com:55626/heroku_s84m4rh1'
+  'DATABASE': 'mongodb://admin_fullstackvendas:admin_fullstackvendas_12345@ds033639.mlab.com:33639/fullstackvendas'
 };

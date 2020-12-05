@@ -4,8 +4,8 @@ Sistema de controle de pedidos. De forma simples, cadastre, remova, edite e cont
 
 # Este projeto utiliza: 
 
-[Express](https://expressjs.com) versão 4.16.0<br>
-[Angular](https://angular.io) versão 9.1.3
+[Angular](https://angular.io) versão 11.0.3<br>
+[Express](https://expressjs.com) versão 4.17.1
 
 ## Development server
 
@@ -15,7 +15,7 @@ Acesse a aplicação em `http://localhost:4200` e a API em `http://localhost:300
 
 ## Build e Deploy
 
-Para fazer o deploy desta aplicação no [Heroku](https://heroku.com), primeiro realize o commit das alterações no [GitHub](https://github.com/paulotokarski/fullstack-pedidos) e, de forma manual, execute o Deploy do Branch no painel da aplicação.
+Para fazer o deploy desta aplicação no [Heroku](https://heroku.com), primeiro realize o commit das alterações no [GitHub](https://github.com/paulotokarski/fullstack-pedidos) e, de forma manual, execute o Deploy da Branch no painel da aplicação.
 
 ## Testes
 
@@ -27,7 +27,6 @@ Os seguintes testes estão previstos:
   <li>Verifica a existência do formulário de edição na página;</li>
   <li>Testes de conexão com API.</li>
 </ul>
-
 
 ## Mais Ajuda
 

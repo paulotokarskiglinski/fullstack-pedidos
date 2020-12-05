@@ -33,7 +33,7 @@
         "strategy": "performance",
         "maxSize": 100,
         "maxAge": "1d",
-        "timeout": "5s"
+        "timeout": "1m"
       }
     },
     {
@@ -43,7 +43,7 @@
         "strategy": "performance",
         "maxSize": 100,
         "maxAge": "1d",
-        "timeout": "5s"
+        "timeout": "1m"
       }
     },
     {
@@ -53,7 +53,7 @@
         "strategy": "performance",
         "maxSize": 100,
         "maxAge": "1d",
-        "timeout": "5s"
+        "timeout": "1m"
       }
     }
   ]
