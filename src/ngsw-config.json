@@ -30,9 +30,9 @@
       "name": "clientes-api",
       "urls": ["https://fullstack-pedidos.herokuapp.com/clientes"],
       "cacheConfig": {
-        "strategy": "freshness",
+        "strategy": "performance",
         "maxSize": 100,
-        "maxAge": "1h",
+        "maxAge": "1d",
         "timeout": "5s"
       }
     },
@@ -40,9 +40,9 @@
       "name": "pedidos-api",
       "urls": ["https://fullstack-pedidos.herokuapp.com/pedidos"],
       "cacheConfig": {
-        "strategy": "freshness",
+        "strategy": "performance",
         "maxSize": 100,
-        "maxAge": "1h",
+        "maxAge": "1d",
         "timeout": "5s"
       }
     },
@@ -50,9 +50,9 @@
       "name": "produtos-api",
       "urls": ["https://fullstack-pedidos.herokuapp.com/produtos"],
       "cacheConfig": {
-        "strategy": "freshness",
+        "strategy": "performance",
         "maxSize": 100,
-        "maxAge": "1h",
+        "maxAge": "1d",
         "timeout": "5s"
       }
     }
