@@ -2,6 +2,8 @@
 
 Sistema de controle de pedidos. De forma simples, cadastre, remova, edite e controle os seus pedidos.
 
+![Printscreen](printscreen.png)
+
 # Este projeto utiliza: 
 
 [Angular](https://angular.io) versão 11.0.3<br>
