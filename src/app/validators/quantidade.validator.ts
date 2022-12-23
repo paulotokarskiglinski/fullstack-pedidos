@@ -1,8 +1,8 @@
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 
 export class QuantidadeValidator {
 
-  static quantidadeMultiplo(form: FormControl) {
+  static quantidadeMultiplo(form: UntypedFormControl) {
     if (form.value.quantidade > 0) {
       if (form.value.multiplo === 0) {
         return null;

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ApiService} from './services/api.service';
 import {QuantidadeValidator} from './validators/quantidade.validator';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {CurrencyPipe} from '@angular/common';
 
 import {Pedido} from './models/Pedido';
@@ -15,7 +15,7 @@ declare let $: any;
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [CurrencyPipe, FormBuilder]
+  providers: [CurrencyPipe, UntypedFormBuilder]
 })
 
 export class AppComponent implements OnInit {
@@ -25,8 +25,8 @@ export class AppComponent implements OnInit {
   public pedidos: Pedido[] = [];
   public produtos: Produto[] = [];
   public clientes: Cliente[] = [];
-  public editarPedidoForm: FormGroup;
-  public cadastroPedidoForm: FormGroup;
+  public editarPedidoForm: UntypedFormGroup;
+  public cadastroPedidoForm: UntypedFormGroup;
 
   // Controle para os alertas dos formulários
   public alerts: any = {
@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
     cadastro: {sucesso: false, erro: false}
   };
 
-  constructor(private api: ApiService, private fb: FormBuilder, private updates: SwUpdate) {
+  constructor(private api: ApiService, private fb: UntypedFormBuilder, private updates: SwUpdate) {
     updates.available.subscribe(event => {
       updates.activateUpdate().then(() => document.location.reload());
     });
@@ -184,7 +184,7 @@ export class AppComponent implements OnInit {
    * Parametros: item (opicional)
    * Adiciona uma linha ao formulário para o cadastro de um novo Produto
    */
-  novoItem(item?: any): FormGroup {
+  novoItem(item?: any): UntypedFormGroup {
     // Caso se tenha os valores para os campos
     if (item) {
       return this.fb.group({
@@ -211,7 +211,7 @@ export class AppComponent implements OnInit {
   * Adiciona um novo item na lista de itens do formulário para cadastro no formulário
   */
   adicionarItem(formulario: any): void {
-    const ctrl = <FormArray>formulario.controls['itens'];
+    const ctrl = <UntypedFormArray>formulario.controls['itens'];
     ctrl.push(this.novoItem());
   }
 
@@ -220,7 +220,7 @@ export class AppComponent implements OnInit {
   * Remove o item da lista
   */
   removerItem(index: number, formulario: any): void {
-    const ctrl = <FormArray>formulario.controls['itens'];
+    const ctrl = <UntypedFormArray>formulario.controls['itens'];
     ctrl.removeAt(index);
   }
 
@@ -232,10 +232,10 @@ export class AppComponent implements OnInit {
   selecionarProduto(index: number, idProduto: string, formulario: any): void {
     this.produtos.filter(p => {
       if (p._id === idProduto) {
-        (<FormArray>formulario.controls['itens']).at(index).get('precoUni').setValue(p.preco);
-        (<FormArray>formulario.controls['itens']).at(index).get('multiplo').setValue(p.multiplo);
-        (<FormArray>formulario.controls['itens']).at(index).get('quantidade').setValue(p.multiplo);
-        (<FormArray>formulario.controls['itens']).at(index).get('rentabilidade').setValue('Boa');
+        (<UntypedFormArray>formulario.controls['itens']).at(index).get('precoUni').setValue(p.preco);
+        (<UntypedFormArray>formulario.controls['itens']).at(index).get('multiplo').setValue(p.multiplo);
+        (<UntypedFormArray>formulario.controls['itens']).at(index).get('quantidade').setValue(p.multiplo);
+        (<UntypedFormArray>formulario.controls['itens']).at(index).get('rentabilidade').setValue('Boa');
 
         this.auxPedido = formulario.controls['itens'].value;
       }
@@ -252,11 +252,11 @@ export class AppComponent implements OnInit {
     formulario.controls['itens'].at(index).get('precoUni').setValidators(Validators.min(this.auxPedido[index].precoUni - this.auxPedido[index].precoUni * 0.1));
 
     if (precoUni > this.auxPedido[index].precoUni) {
-      (<FormArray>formulario.controls['itens']).at(index).get('rentabilidade').setValue('Ótima');
+      (<UntypedFormArray>formulario.controls['itens']).at(index).get('rentabilidade').setValue('Ótima');
     } else if (precoUni >= (this.auxPedido[index].precoUni - this.auxPedido[index].precoUni * 0.1) && precoUni <= this.auxPedido[index].precoUni) {
-      (<FormArray>formulario.controls['itens']).at(index).get('rentabilidade').setValue('Boa');
+      (<UntypedFormArray>formulario.controls['itens']).at(index).get('rentabilidade').setValue('Boa');
     } else if (precoUni < (this.auxPedido[index].precoUni - this.auxPedido[index].precoUni * 0.1)) {
-      (<FormArray>formulario.controls['itens']).at(index).get('rentabilidade').setValue('Ruim');
+      (<UntypedFormArray>formulario.controls['itens']).at(index).get('rentabilidade').setValue('Ruim');
     }
   }
 
@@ -272,7 +272,7 @@ export class AppComponent implements OnInit {
       'itens': this.fb.array([])
     });
 
-    const ctrl = <FormArray>this.editarPedidoForm.controls['itens'];
+    const ctrl = <UntypedFormArray>this.editarPedidoForm.controls['itens'];
     this.auxPedido = [];
     pedido.itens.forEach(i => {
       this.auxPedido.push(i);
