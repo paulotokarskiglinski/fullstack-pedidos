@@ -33,7 +33,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, '/dist/fullstack-pedidos')));
+app.use(express.static(path.join(__dirname, 'dist/fullstack-pedidos/browser')));
 
 // Rotas
 app.use('/', index);
@@ -41,22 +41,26 @@ app.use('/pedidos', pedidos);
 app.use('/clientes', clientes);
 app.use('/produtos', produtos);
 
-// Schemas
-global.pedido = require('./models/Pedido')();
-global.cliente = require('./models/Cliente')();
-global.produto = require('./models/Produto')();
-
 // 4O4
 app.use((req, res, next) => {
   next(createError(404));
 });
 
 // Error Handler
+const API = ['/pedidos', '/clientes', '/produtos'];
+
 app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  if (status >= 500) console.error(err);
+
+  if (API.some(rota => req.originalUrl.startsWith(rota))) {
+    return res.status(status).json({erro: err.message});
+  }
+
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  res.status(err.status || 500);
+  res.status(status);
   res.render('error');
 });
 

@@ -1,15 +1,13 @@
 // ===================================================================================================================
 // API - Clientes
 // ===================================================================================================================
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const Cliente = require('../models/Cliente');
 
 // GET Clientes
-router.get('/', (req, res, next) => {
-  cliente.find({}).sort('nome').exec((err, models) => {
-    if (err) console.error(err);
-    else res.json(models);
-  });
+router.get('/', async (req, res) => {
+  res.json(await Cliente.find({}).sort('nome'));
 });
 
 module.exports = router;

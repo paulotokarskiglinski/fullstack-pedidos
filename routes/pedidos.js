@@ -1,44 +1,29 @@
 // ===================================================================================================================
 // API - Pedidos
 // ===================================================================================================================
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const Pedido = require('../models/Pedido');
 
 // GET
-router.get('/', (req, res, next) => {
-  pedido.find({}, (err, models) => {
-    if (err) console.error(err);
-    else res.json(models);
-  });
+router.get('/', async (req, res) => {
+  res.json(await Pedido.find({}));
 });
 
 // POST
-router.post('/', (req, res, next) => {
-  var p = req.body;
-
-  pedido.create(p, (err, model) => {
-    if (err) console.error(err);
-    else res.json(model);
-  });
+router.post('/', async (req, res) => {
+  res.json(await Pedido.create(req.body));
 });
 
 // PUT
-router.put('/', (req, res, next) => {
-  var p = req.body;
-  pedido.findOneAndUpdate(p.pedido, p, (err, model) => {
-    if (err) console.error(err);
-    else res.json(model);
-  });
+router.put('/', async (req, res) => {
+  const p = req.body;
+  res.json(await Pedido.findByIdAndUpdate(p.pedido, p));
 });
 
 // DELETE
-router.delete('/:id', (req, res, next) => {
-  var id = req.params.id;
-
-  pedido.findByIdAndRemove(id, (err, model) => {
-    if (err) console.error(err);
-    else res.json(model);
-  })
+router.delete('/:id', async (req, res) => {
+  res.json(await Pedido.findByIdAndDelete(req.params.id));
 });
 
 module.exports = router;

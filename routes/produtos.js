@@ -1,15 +1,13 @@
 // ===================================================================================================================
 // API - Produtos
 // ===================================================================================================================
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const Produto = require('../models/Produto');
 
 // GET Produtos
-router.get('/', (req, res, next) => {
-  produto.find({}).sort('nome').exec((err, models) => {
-    if (err) console.error(err);
-    else res.json(models);
-  });
+router.get('/', async (req, res) => {
+  res.json(await Produto.find({}).sort('nome'));
 });
 
 module.exports = router;

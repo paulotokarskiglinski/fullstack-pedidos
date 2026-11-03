@@ -27,6 +27,7 @@ package-lock.json
 !.vscode/extensions.json
 
 # misc
+.env
 /.angular/cache
 /.sass-cache
 /connect.lock
