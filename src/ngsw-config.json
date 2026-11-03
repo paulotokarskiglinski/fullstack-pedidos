@@ -30,7 +30,7 @@
       "name": "clientes-api",
       "urls": ["/clientes"],
       "cacheConfig": {
-        "strategy": "performance",
+        "strategy": "freshness",
         "maxSize": 100,
         "maxAge": "1d",
         "timeout": "1m"
@@ -50,7 +50,7 @@
       "name": "produtos-api",
       "urls": ["/produtos"],
       "cacheConfig": {
-        "strategy": "performance",
+        "strategy": "freshness",
         "maxSize": 100,
         "maxAge": "1d",
         "timeout": "1m"
