@@ -5,6 +5,7 @@
  */
 
 var app = require('../app');
+var connect = require('../db');
 var debug = require('debug')('fullstack-pedidos:server');
 var http = require('http');
 
@@ -22,12 +23,20 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Connect to MongoDB, then listen on provided port, on all network interfaces.
+ * The initial connection is not retried, so exit instead of serving a broken API.
  */
 
-server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+connect()
+  .then(() => server.listen(port))
+  .catch(err => {
+    console.error('Erro ao conectar ao MongoDB: ' + err.message);
+    console.error('Verifique se o banco está em execução (docker compose up -d) e o valor de MONGODB_URI.');
+    process.exit(1);
+  });
 
 /**
  * Normalize a port into a number, string, or false.

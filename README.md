@@ -23,7 +23,9 @@ npm run seed
 
 O comando `npm run seed` cadastra Clientes e Produtos de exemplo e pode ser executado mais de uma vez sem duplicar os registros.
 
-Por padrão a API se conecta em `mongodb://localhost:27017/fullstack-pedidos`. Para usar outro banco ou outra porta, copie o arquivo `.env.example` para `.env` e altere `MONGODB_URI` e `PORT`.
+Por padrão a API se conecta em `mongodb://localhost:27017/fullstack-pedidos`. Para usar outro banco, copie o arquivo `.env.example` para `.env` e altere `MONGODB_URI`.
+
+A variável `PORT` também pode ser alterada no `.env`, mas a aplicação Angular em desenvolvimento (`npm run app`) acessa a API em `http://localhost:3000`. Ao mudar a porta, atualize também `src/environments/environment.ts`.
 
 ## Development server
 

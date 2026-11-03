@@ -68,6 +68,23 @@ describe('AppComponent', () => {
   });
 
   /*
+   * Quando a API retorna erro, o usuário deve ser notificado
+   */
+  it('Deve exibir o alerta de erro quando a exclusão falhar', () => {
+    vi.useFakeTimers();
+    const component = TestBed.createComponent(AppComponent).componentInstance;
+
+    component.delete('abc');
+    httpMock.expectOne(environment.apiUrl.pedidos + '/abc')
+      .flush({erro: 'falha'}, {status: 500, statusText: 'Internal Server Error'});
+    expect(component.alerts.excluir.erro).toBe(true);
+
+    vi.advanceTimersByTime(5000);
+    expect(component.alerts.excluir.erro).toBe(false);
+    vi.useRealTimers();
+  });
+
+  /*
    * A rentabilidade é calculada a partir do preço do produto:
    * acima do preço = Ótima, até 10% abaixo = Boa, mais de 10% abaixo = Ruim (formulário inválido)
    */

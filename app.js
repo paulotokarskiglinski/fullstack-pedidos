@@ -3,16 +3,12 @@ const logger = require('morgan');
 const express = require('express');
 const createError = require('http-errors');
 const cookieParser = require('cookie-parser');
-const connect = require('./db');
 const app = express();
 
 const index = require('./routes/index');
 const pedidos = require('./routes/pedidos');
 const clientes = require('./routes/clientes');
 const produtos = require('./routes/produtos');
-
-// Banco de dados
-connect().catch(err => console.error('Erro ao conectar ao MongoDB:', err.message));
 
 // CORS
 app.use(function (req, res, next) {

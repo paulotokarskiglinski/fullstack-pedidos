@@ -31,7 +31,7 @@
           <label for="selectCliente">Cliente</label>
           <select class="form-control" formControlName="cliente" id="selectCliente">
             <option disabled selected>Selecione um cliente</option>
-            @for (c of clientes; track c) {
+            @for (c of clientes; track c._id) {
               <option value="{{c._id}}">{{c.nome}}</option>
             }
           </select>
@@ -61,7 +61,7 @@
                       formControlName="produto"
                       id="selectProduto">
                       <option disabled selected>Selecione um produto</option>
-                      @for (p of produtos; track p) {
+                      @for (p of produtos; track p._id) {
                         <option [value]="p._id">{{p.nome}} |
                         R${{p.preco | currency:'BRL':'':'1.2-2' }}</option>
                       }
@@ -179,7 +179,7 @@
                     </div>
                   }
 
-                  @for (p of pedidos; track p) {
+                  @for (p of pedidos; track p._id) {
                     <div class="card card-pedido">
                       <div class="card-body">
                         <div class="row">
@@ -228,7 +228,7 @@
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    @for (i of p.itens; track i; let cont = $index) {
+                                    @for (i of p.itens; track $index; let cont = $index) {
                                       <tr>
                                         <th scope="row">{{cont + 1}}</th>
                                         <td>{{getProdutoNome(i.produto)}}</td>
@@ -294,7 +294,7 @@
                           <label for="selectCliente">Cliente</label>
                           <select class="form-control" formControlName="cliente">
                             <option disabled selected>Selecione um cliente</option>
-                            @for (c of clientes; track c) {
+                            @for (c of clientes; track c._id) {
                               <option value="{{c._id}}">{{c.nome}}</option>
                             }
                           </select>
@@ -324,7 +324,7 @@
                                       formControlName="produto"
                                       id="selectPeodutoEdit">
                                       <option disabled selected>Selecione um produto</option>
-                                      @for (p of produtos; track p) {
+                                      @for (p of produtos; track p._id) {
                                         <option [value]="p._id">{{p.nome}} | R${{p.preco}}</option>
                                       }
                                     </select>

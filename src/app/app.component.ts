@@ -106,8 +106,8 @@ export class AppComponent implements OnInit {
    * Em caso de sucesso ou erro o usuário é notificado
    */
   create(pedido: Pedido): void {
-    this.api.postPedido(pedido)
-      .subscribe(res => {
+    this.api.postPedido(pedido).subscribe({
+      next: res => {
         if (res) {
           this.auxPedido = [];
           this.getPedidos();
@@ -116,17 +116,13 @@ export class AppComponent implements OnInit {
             'cliente': [null, Validators.required],
             'itens': this.fb.array([this.novoItem()])
           });
-          this.alerts.cadastro.sucesso = true;
-          setTimeout(() => {
-            this.alerts.cadastro.sucesso = false;
-          }, 5000);
+          this.mostrarAlerta(this.alerts.cadastro, 'sucesso');
         } else {
-          this.alerts.cadastro.erro = true;
-          setTimeout(() => {
-            this.alerts.cadastro.erro = false;
-          }, 5000);
+          this.mostrarAlerta(this.alerts.cadastro, 'erro');
         }
-      });
+      },
+      error: () => this.mostrarAlerta(this.alerts.cadastro, 'erro')
+    });
   }
 
   /*
@@ -135,21 +131,17 @@ export class AppComponent implements OnInit {
    * Em caso de sucesso ou erro o usuário é notificado
    */
   update(pedido: Pedido): void {
-    this.api.updatePedido(pedido)
-      .subscribe(res => {
+    this.api.updatePedido(pedido).subscribe({
+      next: res => {
         if (res) {
           this.getPedidos();
-          this.alerts.editar.sucesso = true;
-          setTimeout(() => {
-            this.alerts.editar.sucesso = false;
-          }, 5000);
+          this.mostrarAlerta(this.alerts.editar, 'sucesso');
         } else {
-          this.alerts.editar.erro = true;
-          setTimeout(() => {
-            this.alerts.editar.erro = false;
-          }, 5000);
+          this.mostrarAlerta(this.alerts.editar, 'erro');
         }
-      });
+      },
+      error: () => this.mostrarAlerta(this.alerts.editar, 'erro')
+    });
   }
 
   /*
@@ -158,20 +150,28 @@ export class AppComponent implements OnInit {
    * Em caso de sucesso ou erro o usuário é notificado
    */
   delete(id: string): void {
-    this.api.deletePedido(id).subscribe(res => {
-      if (res) {
-        this.getPedidos();
-        this.alerts.excluir.sucesso = true;
-        setTimeout(() => {
-          this.alerts.excluir.sucesso = false;
-        }, 5000);
-      } else {
-        this.alerts.excluir.erro = true;
-        setTimeout(() => {
-          this.alerts.excluir.erro = false;
-        }, 5000);
-      }
+    this.api.deletePedido(id).subscribe({
+      next: res => {
+        if (res) {
+          this.getPedidos();
+          this.mostrarAlerta(this.alerts.excluir, 'sucesso');
+        } else {
+          this.mostrarAlerta(this.alerts.excluir, 'erro');
+        }
+      },
+      error: () => this.mostrarAlerta(this.alerts.excluir, 'erro')
     });
+  }
+
+  /*
+   * Parametros: alerta do formulário (alerts.cadastro, alerts.editar ou alerts.excluir), tipo do alerta
+   * Exibe o alerta e o esconde após 5 segundos
+   */
+  private mostrarAlerta(alerta: {sucesso: boolean, erro: boolean}, tipo: 'sucesso' | 'erro'): void {
+    alerta[tipo] = true;
+    setTimeout(() => {
+      alerta[tipo] = false;
+    }, 5000);
   }
 
   /*
