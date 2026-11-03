@@ -1,8 +1,9 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, ViewChild} from '@angular/core';
 import {ApiService} from './services/api.service';
 import {QuantidadeValidator} from './validators/quantidade.validator';
-import {UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {CurrencyPipe} from '@angular/common';
+import {filter} from 'rxjs/operators';
 
 import {Pedido} from './models/Pedido';
 import {Cliente} from './models/Cliente';
@@ -13,13 +14,20 @@ declare let $: any;
 
 @Component({
   selector: 'app-root',
+  imports: [ReactiveFormsModule, CurrencyPipe],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [CurrencyPipe, UntypedFormBuilder]
+  // O Angular 22 usa OnPush por padrão; o componente altera seus campos dentro de subscribes e timers,
+  // então precisa da verificação a cada ciclo do zone.js, como nas versões anteriores
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 
 export class AppComponent implements OnInit {
   @ViewChild('modalEditarItem') modalEditarItem;
+
+  private api = inject(ApiService);
+  private fb = inject(UntypedFormBuilder);
+  private updates = inject(SwUpdate);
 
   public auxPedido: any;
   public pedidos: Pedido[] = [];
@@ -35,10 +43,12 @@ export class AppComponent implements OnInit {
     cadastro: {sucesso: false, erro: false}
   };
 
-  constructor(private api: ApiService, private fb: UntypedFormBuilder, private updates: SwUpdate) {
-    updates.available.subscribe(event => {
-      updates.activateUpdate().then(() => document.location.reload());
-    });
+  constructor() {
+    this.updates.versionUpdates
+      .pipe(filter(event => event.type === 'VERSION_READY'))
+      .subscribe(() => {
+        this.updates.activateUpdate().then(() => document.location.reload());
+      });
 
     this.editarPedidoForm = this.fb.group({
       'pedido': [null, Validators.required],
@@ -107,12 +117,12 @@ export class AppComponent implements OnInit {
             'itens': this.fb.array([this.novoItem()])
           });
           this.alerts.cadastro.sucesso = true;
-          setInterval(() => {
+          setTimeout(() => {
             this.alerts.cadastro.sucesso = false;
           }, 5000);
         } else {
           this.alerts.cadastro.erro = true;
-          setInterval(() => {
+          setTimeout(() => {
             this.alerts.cadastro.erro = false;
           }, 5000);
         }
@@ -130,12 +140,12 @@ export class AppComponent implements OnInit {
         if (res) {
           this.getPedidos();
           this.alerts.editar.sucesso = true;
-          setInterval(() => {
+          setTimeout(() => {
             this.alerts.editar.sucesso = false;
           }, 5000);
         } else {
           this.alerts.editar.erro = true;
-          setInterval(() => {
+          setTimeout(() => {
             this.alerts.editar.erro = false;
           }, 5000);
         }
@@ -152,12 +162,12 @@ export class AppComponent implements OnInit {
       if (res) {
         this.getPedidos();
         this.alerts.excluir.sucesso = true;
-        setInterval(() => {
+        setTimeout(() => {
           this.alerts.excluir.sucesso = false;
         }, 5000);
       } else {
         this.alerts.excluir.erro = true;
-        setInterval(() => {
+        setTimeout(() => {
           this.alerts.excluir.erro = false;
         }, 5000);
       }
@@ -193,7 +203,7 @@ export class AppComponent implements OnInit {
         'precoUni': [item.precoUni, Validators.compose([Validators.required])],
         'quantidade': [item.quantidade, Validators.compose([Validators.min(0), Validators.required])],
         'rentabilidade': [{value: item.rentabilidade, disabled: true}, Validators.required]
-      }, {validator: QuantidadeValidator.quantidadeMultiplo});
+      }, {validators: QuantidadeValidator.quantidadeMultiplo});
       // Caso seja um campo novo
     } else {
       return this.fb.group({
@@ -202,7 +212,7 @@ export class AppComponent implements OnInit {
         'precoUni': [null, Validators.compose([Validators.required])],
         'quantidade': [null, Validators.compose([Validators.min(0), Validators.required])],
         'rentabilidade': [{value: null, disabled: true}, Validators.required]
-      }, {validator: QuantidadeValidator.quantidadeMultiplo});
+      }, {validators: QuantidadeValidator.quantidadeMultiplo});
     }
   }
 

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {map} from 'rxjs/operators';
@@ -8,13 +8,11 @@ import {Pedido} from './../models/Pedido';
 import {Cliente} from './../models/Cliente';
 import {Produto} from './../models/Produto';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class ApiService {
 
+  private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
-
-  public constructor(private http: HttpClient) {
-  }
 
   getHttpOptions() {
     return {headers: new HttpHeaders({'Content-Type': 'application/json'})};

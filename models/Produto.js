@@ -1,18 +1,10 @@
 const mongoose = require('mongoose');
-const DATABASE = require('./../libs/config').DATABASE;
 
-module.exports = function () {
-  mongoose.set('useFindAndModify', false);
-  mongoose.connect(DATABASE, {useNewUrlParser: true});
+const Produto = new mongoose.Schema({
+  id: Number,
+  nome: String,
+  preco: Number,
+  multiplo: Number
+});
 
-  const Schema = require('mongoose').Schema, ObjectId = Schema.ObjectId;
-
-  const Produto = Schema({
-    id: Number,
-    nome: String,
-    preco: Number,
-    multiplo: Number
-  });
-
-  return mongoose.model('produto', Produto);
-};
+module.exports = mongoose.model('produto', Produto);

@@ -28,7 +28,7 @@
   "dataGroups": [
     {
       "name": "clientes-api",
-      "urls": ["https://fullstack-pedidos.herokuapp.com/clientes"],
+      "urls": ["/clientes"],
       "cacheConfig": {
         "strategy": "performance",
         "maxSize": 100,
@@ -38,7 +38,7 @@
     },
     {
       "name": "pedidos-api",
-      "urls": ["https://fullstack-pedidos.herokuapp.com/pedidos"],
+      "urls": ["/pedidos"],
       "cacheConfig": {
         "strategy": "performance",
         "maxSize": 100,
@@ -48,7 +48,7 @@
     },
     {
       "name": "produtos-api",
-      "urls": ["https://fullstack-pedidos.herokuapp.com/produtos"],
+      "urls": ["/produtos"],
       "cacheConfig": {
         "strategy": "performance",
         "maxSize": 100,

@@ -1,8 +1,13 @@
+/*
+ * Build de produção servido pelo próprio servidor Express (npm run build && npm start)
+ * A API fica na mesma origem da aplicação
+ */
+
 export const environment = {
   production: true,
   apiUrl: {
-    pedidos: 'https://fullstack-pedidos.herokuapp.com/pedidos',
-    produtos: 'https://fullstack-pedidos.herokuapp.com/produtos',
-    clientes: 'https://fullstack-pedidos.herokuapp.com/clientes'
+    pedidos: '/pedidos',
+    produtos: '/produtos',
+    clientes: '/clientes'
   }
 };
